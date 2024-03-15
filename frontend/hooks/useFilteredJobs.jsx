@@ -38,11 +38,11 @@ const useFilteredJobs = (offset, limit) => {
           data: jobs,
           error,
           count,
-        } = await ClientApi.getFilteredJobs({
-          ...cachedFilters,
-          offset,
-          limit,
-        });
+        } = {
+          error: {
+            message: "API not implemented"
+          }
+        }
 
         if (error) {
           setErrors(error?.message || 'Something went wrong');

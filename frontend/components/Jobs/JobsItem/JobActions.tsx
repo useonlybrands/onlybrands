@@ -2,14 +2,13 @@ import React, { useEffect, useState } from 'react';
 import Button from '@/components/UI/Button';
 import { ERROR_MESSAGES } from '@/constants/index';
 import useStore from '@/lib/store';
-import ClientApi from '@/utils/initDatabase';
 import { BookmarkIcon as BookmarkIconOutline } from '@heroicons/react/24/outline';
 import { BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/24/solid';
 import { useUser } from '@supabase/auth-helpers-react';
 import { toast } from 'react-toastify';
 import { JobActionsProps } from './types';
 import { REMOVE_BUTTON_TITLE, SAVE_BUTTON_TITLE } from './constants';
-
+const ClientApi = {};
 const JobActions = (props: JobActionsProps): React.ReactElement => {
   const { id: jobId, outlined } = props;
   const user = useUser();
