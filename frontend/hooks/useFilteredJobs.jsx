@@ -1,6 +1,6 @@
-import ClientApi from '@/utils/initDatabase';
+// import ClientApi from '@/utils/initDatabase';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-
+const ClientApi = {};
 const useFilteredJobs = (offset, limit) => {
   const [jobs, setJobs] = useState([]);
   const [totalCount, setTotalCount] = useState(0);

@@ -1,6 +1,5 @@
-import ClientApi from '@/utils/initDatabase';
 import { useEffect, useState } from 'react';
-
+const ClientApi = {};
 export const useSavedJobs = (userId) => {
   const [savedJobs, setSavedJobs] = useState([]);
   const [loading, setLoading] = useState(true);
