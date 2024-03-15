@@ -32,6 +32,8 @@ const useFilteredJobs = (offset, limit) => {
   }, [cachedFilters]);
 
   useEffect(() => {
+    setErrors('Something went wrong');
+    return;
     const fetchJobs = async () => {
       try {
         const {

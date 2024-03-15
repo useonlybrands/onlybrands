@@ -1,7 +1,7 @@
 import { NavigationItem } from './types';
 
 const Navigation: NavigationItem[] = [
-  { pathname: '/', name: 'Find a Job' },
+  { pathname: '/', name: 'Find influencers' },
   // { pathname: '/careers', name: 'Careers' },
   // { pathname: '/resources', name: 'Resources' },
 ];

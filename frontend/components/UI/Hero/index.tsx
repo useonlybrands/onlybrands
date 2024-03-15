@@ -5,7 +5,7 @@ import CompanyLogo from '../CompanyLogo';
 import { HeroProps } from './types';
 
 const Hero: React.FC<HeroProps> = (props: HeroProps): React.ReactElement => {
-  const { title = 'Guiding the next generation of devs!', action, logo } = props;
+  const { title = 'Decentralised sponsorships made easy', action, logo } = props;
 
   const user = useUser();
   const router = useRouter();

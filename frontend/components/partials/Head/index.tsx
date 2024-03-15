@@ -11,7 +11,7 @@ const Head: React.FC<HeadProps> = (props: HeadProps): React.ReactElement => {
 
   return (
     <HeadContainer>
-      <title>{(title !== HomeTitle && `${title} - EntryLevel.dev`) || title}</title>
+      <title>{(title !== HomeTitle && `${title} - OnlyBrands`) || title}</title>
       <meta content={description} name="description" />
       <meta content="initial-scale=1.0, width=device-width" name="viewport" />
     </HeadContainer>
