@@ -36,7 +36,7 @@ const Header: React.FC = (): React.ReactElement => {
 
                 <div className="flex items-center justify-center flex-1 sm:items-stretch sm:justify-start">
                   <Link className="flex items-center flex-shrink-0 text-white" href="/">
-                    <Image alt="entry level devs" height={22} src="/logo.svg" width={82} />
+                    <Image alt="entry level devs" height={18} src="/logo.png" width={60} />
                   </Link>
                 </div>
 

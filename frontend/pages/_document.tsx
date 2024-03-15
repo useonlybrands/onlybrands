@@ -13,6 +13,8 @@ const Document = (): JSX.Element => {
       <link href="/android-chrome-512x512.png" rel="icon" sizes="512x512" />
       <link href="/site.webmanifest" rel="manifest" />
       <link href="https://use.typekit.net/ooy8veu.css" rel="stylesheet" />
+      <link rel="preconnect" href="https://rsms.me/"/>
+      <link rel="stylesheet" href="https://rsms.me/inter/inter.css"/>
       <body>
         <Main />
         <NextScript />

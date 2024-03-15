@@ -1,4 +1,12 @@
-/*@import 'fonts/fonts.css';*/
+/* CSS */
+:root {
+  font-family: Inter, sans-serif;
+  font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
+}
+@supports (font-variation-settings: normal) {
+  :root { font-family: InterVariable, sans-serif; }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,7 +25,6 @@ html {
 
 body {
   background-color: #fafafa;
-  font-family: 'Lexend', sans-serif;
   font-size: 16px;
   color: #333;
   line-height: 1.5;
