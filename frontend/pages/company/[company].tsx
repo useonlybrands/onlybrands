@@ -45,7 +45,7 @@ const JobsByCompany = ({ jobs, error }) => {
   return (
     <section className="flex flex-col items-center justify-center mx-auto max-w-8xl">
       <Head>
-        <title>{`${companyCapitalize} Jobs`} | EntryLevel.dev</title>
+        <title>{`${companyCapitalize} Jobs`} | OnlyBrands</title>
         <meta content="initial-scale=1.0, width=device-width" name="viewport" />
       </Head>
       <Hero

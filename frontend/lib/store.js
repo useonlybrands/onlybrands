@@ -1,6 +1,6 @@
-import ClientApi from '@/utils/initDatabase';
+// import ClientApi from '@/utils/initDatabase';
 import { create } from 'zustand';
-
+const ClientApi = {};
 const useStore = create(
   (set) => ({
     savedJobs: [],

@@ -70,7 +70,7 @@ const { assert, expect } = require("chai")
                       await new Promise(async (resolve, reject) => {
                           // setup listener for our event
                           apiConsumer.once("DataFullfilled", async () => {
-                              console.log("DataFullfilled event fired!")
+                            //   console.log("DataFullfilled event fired!")
                               const volume = await apiConsumer.volume()
                               // assert throws an error if it fails, so we need to wrap
                               // it in a try/catch so that the promise returns event

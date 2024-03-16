@@ -1,6 +1,6 @@
-import ClientApi from '@/utils/initDatabase';
+// import ClientApi from '@/utils/initDatabase';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-
+const ClientApi = {};
 const useFilteredJobs = (offset, limit) => {
   const [jobs, setJobs] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -32,6 +32,8 @@ const useFilteredJobs = (offset, limit) => {
   }, [cachedFilters]);
 
   useEffect(() => {
+    setErrors('Something went wrong');
+    return;
     const fetchJobs = async () => {
       try {
         const {

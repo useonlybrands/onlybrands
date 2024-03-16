@@ -24,7 +24,7 @@ const JobsByCategory = () => {
   return (
     <section className="flex flex-col items-center justify-center mx-auto max-w-8xl">
       <Head>
-        <title>{`${categoryCapitalize} Category`} | EntryLevel.dev</title>
+        <title>{`${categoryCapitalize} Category`} | OnlyBrands</title>
         <meta content="initial-scale=1.0, width=device-width" name="viewport" />
       </Head>
       <Hero

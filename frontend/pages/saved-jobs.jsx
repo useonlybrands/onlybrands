@@ -14,7 +14,7 @@ const SavedJobs = () => {
   return (
     <div className="min-h-screen mb-20">
       <Head>
-        <title>Saved Jobs | EntryLevel.dev</title>
+        <title>Saved Jobs | OnlyBrands</title>
         <meta content="Saved Jobs" name="description" />
       </Head>
 

@@ -23,7 +23,7 @@ const JobsByLocation = () => {
   return (
     <section className="flex flex-col items-center justify-center mx-auto max-w-8xl">
       <Head>
-        <title>{`${locationCapitalize} Jobs`} | EntryLevel.dev</title>
+        <title>{`${locationCapitalize} Jobs`} | OnlyBrands</title>
         <meta content="initial-scale=1.0, width=device-width" name="viewport" />
       </Head>
       <Hero

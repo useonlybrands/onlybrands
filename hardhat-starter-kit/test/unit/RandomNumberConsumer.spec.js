@@ -99,7 +99,7 @@ const { assert, expect } = require("chai")
 
                       await new Promise(async (resolve, reject) => {
                           randomNumberConsumerV2.once("ReturnedRandomness", async () => {
-                              console.log("ReturnedRandomness event fired!")
+                            //   console.log("ReturnedRandomness event fired!")
                               const firstRandomNumber = await randomNumberConsumerV2.s_randomWords(
                                   0
                               )
