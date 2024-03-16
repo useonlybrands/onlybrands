@@ -60,9 +60,9 @@ const Profile = () => {
   };
 
   const onSuccess = () => {
-  // This is where you should perform any actions after the modal is closed
-  // Such as redirecting the user to a new page
-  window.location.href = "/success";
+    // This is where you should perform any actions after the modal is closed
+    // Such as redirecting the user to a new page
+    window.location.href = "/success";
   };
 
   return (
@@ -107,7 +107,7 @@ const Profile = () => {
             <Tab.Panel>
               <section className="flex flex-col items-center justify-center py-5 space-y-2 text-gray-800">
                 <div className="flex items-end mb-1">
-                  <Avatar avatar={userData?.image} isRounded size="md" />
+                  <Avatar avatar={userData?.avatar} isRounded size="md" />
 
                   {/* {userData?.certified && (
                     <div className="relative top right-5" title="Certified account">
