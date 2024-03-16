@@ -37,7 +37,8 @@ export interface UseApi {
     profile?: BackendProfile,
     updateProfile: (BackendProfile) => Promise<Response>,
     submitBid: (BidInfo) => Promise<void>,
-    fetchBalance: () => Promise<any>
+    fetchBalance: () => Promise<any>,
+    balance?: bigint
 }
 export const useApi: () => UseApi = () => {
     const dynamicContext = useDynamicContext();
@@ -117,10 +118,15 @@ export const useApi: () => UseApi = () => {
 
         const result = await contract.read.balanceOf(["0x239723C845f7Bd613Ec44d5511902E3A2d7A6aCF"]);
         console.log(result);
+        return result
     }
 
+    const [balance, setBalance] = useState<BigInt|undefined>(undefined);
+
     useEffect(() => {
-        fetchBalance().then(console.log)
+        fetchBalance().then((balance) => {
+            setBalance(balance as bigint);
+        })
     }, [dynamicContext]);
 
     return {
@@ -130,6 +136,7 @@ export const useApi: () => UseApi = () => {
         // connectionType: "dynamic",
         profile: backendProfile,
         updateProfile,
-        fetchBalance
+        fetchBalance,
+        balance
     };
 }
