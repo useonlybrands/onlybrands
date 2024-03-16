@@ -23,6 +23,12 @@ contract Marketplace is FunctionsClient, ConfirmedOwner {
         uint views, Status status
     );
 
+    event OfferAccepted(
+        uint indexed adId, 
+        address indexed influencer, 
+        address indexed brand
+    );
+
     /**
      * @dev Enum representing the status of an advertisement deal.
      * 
@@ -99,6 +105,21 @@ contract Marketplace is FunctionsClient, ConfirmedOwner {
 
         // Increment the ad ID for the next ad
         nextAdId++;
+    }
+
+    /**
+     * @notice Accepts an offer for an advertisement deal
+     * @param adId The ID of the advertisement offer to accept
+     */
+    function acceptOffer(uint adId) external {
+        Ad storage ad = ads[adId];
+        require(ad.brand != address(0), "Brand address cannot be zero");
+        require(ad.status == Status.Open, "Offer must be open");
+        require(ad.influencer == msg.sender, "Only the influencer can accept the offer");
+
+        ad.status = Status.Live;
+
+        emit OfferAccepted(adId, ad.influencer, ad.brand);
     }
 
     /**
