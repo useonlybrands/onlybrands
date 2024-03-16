@@ -477,6 +477,23 @@ GOOD EXAMPEL APP	https://github.com/tomhirst/solidity-nextjs-starter
 
 #### DEPLOY TO arbtrium sepolia 
 
+
+1. deploy $only token 
+```
+npx hardhat run scripts/deployment/deployOnly.js --network arbitrumSepolia
+```
+
+2. Deploy the marketplace
+```
+npx hardhat run scripts/deployment/deployMarketplace.js --network arbitrumSepolia
+```
+
+* Note- it uses hardcoded erc20  addr for now * 
+
+
+---
+old 
+
 npx hardhat run scripts/deployment/deployFunction.js --network mumbai
 npx hardhat run scripts/deployment/deployFunction.js --network arbitrumSepolia
 
