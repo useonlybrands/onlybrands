@@ -8,8 +8,7 @@ import {
   jobLocationTypes,
   jobTypes,
 } from '@/constants/filters';
-import useCountries from '@/hooks/useCountries';
-import useSkills from '@/hooks/useSkills';
+// import useSkills from '@/hooks/useSkills';
 import PropTypes from 'prop-types';
 import React, { Suspense, useEffect, useState } from 'react';
 import { IFiltersProps, ISelectedFiltersObjProps } from './types';
@@ -17,8 +16,7 @@ import { OptionItem } from '@/types';
 
 const Filters = (props: IFiltersProps): React.ReactElement => {
   const { onChange } = props;
-  const allCountries: OptionItem[] = useCountries();
-  const allSkills: OptionItem[] = useSkills();
+  // const allSkills: OptionItem[] = useSkills();
   const [categoriesSelected, setCategoriesSelected] = useState<OptionItem[]>([]);
   const [skillsSelected, setskillsSelected] = useState<OptionItem[]>([]);
   const [locationsSelected, setLocationsSelected] = useState<OptionItem[]>([]);
@@ -97,38 +95,6 @@ const Filters = (props: IFiltersProps): React.ReactElement => {
               placeholder="e.g. Software Engineer..."
               setTouched={() => {}}
               title="Specialties"
-              touched={false}
-            />
-          )}
-        </Suspense>
-
-        {/* Skills/Technologies */}
-        <Suspense fallback={<Fallback message="Loading Skills..." />}>
-          {allSkills?.length > 0 && (
-            <AutoComplete
-              multiple
-              onChange={handleOnChangeSkills}
-              options={allSkills}
-              optionsSelected={skillsSelected}
-              placeholder="e.g. React, Vue, Node..."
-              setTouched={() => {}}
-              title="Tech/Skills"
-              touched={false}
-            />
-          )}
-        </Suspense>
-
-        {/* Locations */}
-        <Suspense fallback={<Fallback message="Loading Locations..." />}>
-          {allCountries?.length > 0 && (
-            <AutoComplete
-              multiple
-              onChange={handleOnChangeLocations}
-              options={allCountries}
-              optionsSelected={locationsSelected}
-              placeholder="e.g. United States, Spain..."
-              setTouched={() => {}}
-              title="Location"
               touched={false}
             />
           )}
