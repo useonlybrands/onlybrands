@@ -29,18 +29,25 @@ contract Marketplace is FunctionsClient, ConfirmedOwner {
         address indexed brand
     );
 
+    event OfferRemoved(
+        uint adId,
+        address indexed influencer,
+        address indexed brand
+    );
+
     /**
      * @dev Enum representing the status of an advertisement deal.
      * 
      * @notice The status lifecycle of an ad is as follows:
      * - Open: The brand has made an offer to the influencer.
-     * - Rejected: The influencer has rejected the offer made by the brand.
      * - Live: The influencer has accepted the deal, and the advertisement is now live.
      * - Settling: The influencer has submitted the post URL for verification. 
      * - Chainlink functions are called to verify the view count.
+     * ~~ HERE ARE STATES THAT WE DONT KEEP ON CHAIN ~~ 
+     * - Rejected: The influencer has rejected the offer made by the brand.
      * - Closed: The views have been confirmed, and the payout to the influencer is completed.
      */
-    enum Status { Open, Rejected, Live, Settling, Closed }
+    enum Status { Open, Live, Settling }
 
     struct Ad {
         uint id;
@@ -120,6 +127,20 @@ contract Marketplace is FunctionsClient, ConfirmedOwner {
         ad.status = Status.Live;
 
         emit OfferAccepted(adId, ad.influencer, ad.brand);
+    }
+
+    /**
+     * @notice Allows an influencer to reject an offer or a brand to rescind an offer
+     * @param adId The ID of the advertisement offer to reject or rescind
+     */
+    function removeOffer(uint adId) external {
+        Ad storage ad = ads[adId];
+        require(ad.brand == msg.sender || ad.influencer == msg.sender, "Only brand or influencer can remove the offer");
+        require(ad.status == Status.Open, "Offer must be open to remove");
+
+        delete ads[adId];
+
+        emit OfferRemoved(adId, ad.influencer, ad.brand);
     }
 
     /**
