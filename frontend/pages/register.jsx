@@ -14,14 +14,14 @@ import {
   STEPS,
 } from '@/constants/register';
 import useCountries from '@/hooks/useCountries';
-import ClientApi from '@/utils/initDatabase';
+// import ClientApi from '@/utils/initDatabase';
 import { Formik } from 'formik';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import useModal from '@/hooks/useModal';
 import { ArrowPathIcon, CheckIcon } from '@heroicons/react/24/outline';
-
+const ClientApi = {}
 const Register = () => {
   const router = useRouter();
   const allCountries = useCountries();
