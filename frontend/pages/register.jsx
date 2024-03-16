@@ -39,8 +39,6 @@ const Register = () => {
   const getFieldOptions = (fieldName) => {
     // Field names for which options are available
     const PLATFORM_FIELD = "platform";
-    const USERNAME_FIELD = "username";
-
     const SIZE_FIELD = "size";
     const INDUSTRY_FIELD = "industry";
 
@@ -120,17 +118,32 @@ const Register = () => {
   const createInfluencerOrBrandHandler = async (values, avatarURL) => {
     const profile = {
       profileType: values.role,
-      influencerInfo: {
-        username: user.username,
-        name: values.name,
-        email: values.email,
-        wallet: user.wallet,
-        platform: values.platform,
-        industry: values.industry,
-        sex: values.gender,
-        age: values.age,
-        image: avatarURL,
-      },
+      influencerInfo:
+        values.role === ROLES.INFLUENCER
+          ? {
+              username: user.username,
+              name: values.name,
+              email: values.email,
+              wallet: user.wallet,
+              platform: values.platform[0].id,
+              industry: values.industry[0].id,
+              sex: values.gender,
+              age: values.age,
+              image: avatarURL,
+            }
+          : {},
+      brandInfo:
+        values.role === ROLES.BRAND
+          ? {
+              name: user.username,
+              email: values.email,
+              wallet: user.wallet,
+              industry: values.industry,
+              size: values.size,
+              description: values.description,
+              image: values.image,
+            }
+          : {},
     };
 
     try {

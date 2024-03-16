@@ -23,11 +23,21 @@ const authFetch: AuthFetch = (url, authToken, init = undefined) => {
     headers: {
       ...(init?.headers || {}),
       Authorization: `Bearer ${authToken}`,
+      "Content-Type": "application/json",
     },
   });
 };
 
-export interface BrandInfo {}
+export interface BrandInfo {
+  name: string;
+  email: string;
+  wallet: string;
+  industry: any;
+  size: any;
+  description: any;
+  image: any;
+}
+
 export interface InfluencerInfo {
   username: any;
   name: string;
@@ -99,7 +109,7 @@ export const useApi: () => UseApi = () => {
     console.log("profile:", profile);
     switch (profile.profileType) {
       case ROLES.BRAND:
-        return authFetch("/create_brand", dynamicContext.authToken, {
+        return authFetch("/create_brand/", dynamicContext.authToken, {
           headers: {
             Authorization: `Bearer ${dynamicContext.authToken}`,
           },
@@ -107,7 +117,7 @@ export const useApi: () => UseApi = () => {
           body: JSON.stringify(profile.brandInfo),
         });
       case ROLES.INFLUENCER:
-        return authFetch("/create_influencer", dynamicContext.authToken, {
+        return authFetch("/create_influencer/", dynamicContext.authToken, {
           headers: {
             Authorization: `Bearer ${dynamicContext.authToken}`,
           },
