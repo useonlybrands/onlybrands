@@ -10,7 +10,7 @@ import { useRouter } from 'next/router';
 import { Fragment, useEffect, useState } from 'react';
 
 const UPLOAD_IMAGE_PATH = process.env.NEXT_PUBLIC_SUPABASE_UPLOAD_IMAGE_PATH;
-
+// I guess I should add stuff here
 const Profile = () => {
   const router = useRouter();
   const user = useUser();
