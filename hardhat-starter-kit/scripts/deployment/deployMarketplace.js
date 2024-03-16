@@ -14,17 +14,20 @@ async function deployMarketplace() {
     const _router = '0x234a5fb5Bd614a7AA2FfAB244D603abFA0Ac5C5C'
     // const _donID = 'fun-arbitrum-sepolia-1'
     const _donID = '0x66756e2d617262697472756d2d7365706f6c69612d3100000000000000000000'
+    const _subscriptionId = 36;
     
     const fs = require('fs');
     const path = require('path');
     const _source = fs.readFileSync(path.join(__dirname, "../../contracts/myFunction.js"), "utf8");
 
+    console.log(`source: ${_source}`)
     const _tokenContract = '0x5B557183636e4b72F05721036F3655af5885f282' // its hardcoded for now woops 
     console.log(`using $ONLY at ${_tokenContract}. its' hardcoded, woops.`)
 
     const Marketplace = await marketplaceFactory.deploy(
         _router, 
         _donID, 
+        _subscriptionId,
         _source,  
         _tokenContract
     )
@@ -40,8 +43,10 @@ async function deployMarketplace() {
         console.log("Verifying contract on ARBISCAN...")
         await run("verify:verify", {
             address: Marketplace.address,
-            constructorArguments: [_router, 
+            constructorArguments: [
+                _router, 
                 _donID, 
+                _subscriptionId,
                 _source,  
                 _tokenContract],
             contract: "contracts/Marketplace.sol:Marketplace"

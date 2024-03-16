@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const source = fs.readFileSync(path.join(__dirname, "../../contracts/myFunction.js"), "utf8");
 
+const subscriptionId = 36;
 const router = "0x234a5fb5Bd614a7AA2FfAB244D603abFA0Ac5C5C";
 const donID = "0x66756e2d617262697472756d2d7365706f6c69612d3100000000000000000000";
 
@@ -22,7 +23,7 @@ const donID = "0x66756e2d617262697472756d2d7365706f6c69612d310000000000000000000
             
             const MarketplaceFactory = await ethers.getContractFactory("Marketplace");
             
-            const marketplaceContract = await MarketplaceFactory.connect(deployer).deploy(router, donID, source, onlyContract.address);
+            const marketplaceContract = await MarketplaceFactory.connect(deployer).deploy(router, donID, subscriptionId, source, onlyContract.address);
             
             it("should match the token contract address with the only contract address", async () => {
                 assert.equal(marketplaceContract.tokenContract.address, onlyContract.address);
@@ -38,7 +39,7 @@ const donID = "0x66756e2d617262697472756d2d7365706f6c69612d310000000000000000000
             
             const MarketplaceFactory = await ethers.getContractFactory("Marketplace");
             
-            const marketplaceContract = await MarketplaceFactory.connect(deployer).deploy(router, donID, source, onlyContract.address);
+            const marketplaceContract = await MarketplaceFactory.connect(deployer).deploy(router, donID, subscriptionId, source, onlyContract.address);
 
             const amt = "100000000000000000000";
             // transfer to the brand 100 $ONLY  
@@ -57,7 +58,12 @@ const donID = "0x66756e2d617262697472756d2d7365706f6c69612d310000000000000000000
             const views = 1000;
             const paymentAmount = amt;
 
-            await marketplaceContract.connect(brand).createOffer(influencer.address, views, paymentAmount);
+            const tx = await marketplaceContract.connect(brand).createOffer(influencer.address, views, paymentAmount);
+            console.log(`tx`)
+            console.log(tx)
+            const res = await tx.wait()
+            console.log(`res`)
+            console.log(res)
 
             const offer = await marketplaceContract.ads(adId);
             assert.equal(offer.id, adId);
@@ -83,7 +89,7 @@ const donID = "0x66756e2d617262697472756d2d7365706f6c69612d310000000000000000000
             
             const MarketplaceFactory = await ethers.getContractFactory("Marketplace");
             
-            const marketplaceContract = await MarketplaceFactory.connect(deployer).deploy(router, donID, source, onlyContract.address);
+            const marketplaceContract = await MarketplaceFactory.connect(deployer).deploy(router, donID, subscriptionId, source, onlyContract.address);
 
             const amt = "100000000000000000000";
             // transfer to the brand 100 $ONLY  
@@ -120,7 +126,7 @@ const donID = "0x66756e2d617262697472756d2d7365706f6c69612d310000000000000000000
             
             const MarketplaceFactory = await ethers.getContractFactory("Marketplace");
             
-            const marketplaceContract = await MarketplaceFactory.connect(deployer).deploy(router, donID, source, onlyContract.address);
+            const marketplaceContract = await MarketplaceFactory.connect(deployer).deploy(router, donID, subscriptionId, source, onlyContract.address);
 
             const amt = "100000000000000000000";
             // transfer to the brand 100 $ONLY  
@@ -154,7 +160,7 @@ const donID = "0x66756e2d617262697472756d2d7365706f6c69612d310000000000000000000
             
             const MarketplaceFactory = await ethers.getContractFactory("Marketplace");
             
-            const marketplaceContract = await MarketplaceFactory.connect(deployer).deploy(router, donID, source, onlyContract.address);
+            const marketplaceContract = await MarketplaceFactory.connect(deployer).deploy(router, donID, subscriptionId, source, onlyContract.address);
 
             const amt = "100000000000000000000";
             // transfer to the brand 100 $ONLY  
