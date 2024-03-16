@@ -89,15 +89,6 @@ const Header: React.FC = (): React.ReactElement => {
                     className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                   <UserButton/>
                 </div>
-
-                <div
-                    className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                  <Button color={"secondary"} size={"md"} onClick={() => submitBid({
-                    budget: parseEther("5"),
-                    influencerWallet: "0x595ec62736Bf19445d7F00D66072B3a3c7aeA0F5",
-                    impressions: 100000,
-                  })}>Submit Bid</Button>
-                </div>
               </div>
             </div>
 
