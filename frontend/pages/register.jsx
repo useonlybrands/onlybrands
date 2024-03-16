@@ -11,7 +11,7 @@ import {
   ROLE_OPTIONS,
   ROLES,
   SCHEMAS,
-  STEPS,
+  STEPS
 } from "@/constants/register";
 import useCountries from "@/hooks/useCountries";
 // import ClientApi from '@/utils/initDatabase';
@@ -22,6 +22,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import useModal from "@/hooks/useModal";
 import { ArrowPathIcon, CheckIcon } from "@heroicons/react/24/outline";
+
 
 const Register = () => {
   const router = useRouter();
