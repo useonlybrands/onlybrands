@@ -1,4 +1,4 @@
-import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
+import {DynamicContextProvider, DynamicUserProfile} from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import Layout from "@/components/partials/Layout";
 import { AppProps } from "@/types";
@@ -35,6 +35,7 @@ const App = (props: AppProps): JSX.Element => {
         ),
       }}
     >
+        <DynamicUserProfile/>
       <Layout>
         <Component {...pageProps} />
         <ToastContainer

@@ -12,6 +12,7 @@ import Navigation from "./navigation";
 import { NavigationItem } from "./types";
 import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
 import { useUserWallets } from "@dynamic-labs/sdk-react-core";
+import UserButton from "@/components/UI/UserButton";
 
 const Header: React.FC = (): React.ReactElement => {
   const [isWalletConnected, setWalletConnected] = useState(false);
@@ -37,26 +38,27 @@ const Header: React.FC = (): React.ReactElement => {
               <div className="relative flex items-center justify-between h-16">
                 <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                   {/* Mobile menu button*/}
-                  <Disclosure.Button className="inline-flex items-center justify-center p-2 text-gray-800 rounded-md hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                  <Disclosure.Button
+                      className="inline-flex items-center justify-center p-2 text-gray-800 rounded-md hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                     <span className="sr-only">Open main menu</span>
                     {open ? (
-                      <XMarkIcon aria-hidden="true" className="block w-6 h-6" />
+                        <XMarkIcon aria-hidden="true" className="block w-6 h-6"/>
                     ) : (
-                      <Bars3Icon aria-hidden="true" className="block w-6 h-6" />
+                        <Bars3Icon aria-hidden="true" className="block w-6 h-6"/>
                     )}
                   </Disclosure.Button>
                 </div>
 
                 <div className="flex items-center justify-center flex-1 sm:items-stretch sm:justify-start">
                   <Link
-                    className="flex items-center flex-shrink-0 text-white"
-                    href="/"
+                      className="flex items-center flex-shrink-0 text-white"
+                      href="/"
                   >
                     <Image
-                      alt="entry level devs"
-                      height={18}
-                      src="/logo.png"
-                      width={60}
+                        alt="entry level devs"
+                        height={18}
+                        src="/logo.png"
+                        width={55}
                     />
                   </Link>
                 </div>
@@ -64,27 +66,28 @@ const Header: React.FC = (): React.ReactElement => {
                 <div className="hidden sm:block sm:ml-2">
                   <div className="flex space-x-2">
                     {Navigation.map((item: NavigationItem) => (
-                      <Link
-                        aria-current={
-                          item.pathname === router.pathname ? "page" : false
-                        }
-                        className={classNames(
-                          item.pathname === router.pathname
-                            ? "bg-gray-800 text-white"
-                            : "text-gray-800 hover:bg-primary-700 hover:text-white",
-                          "px-3 py-2 rounded text-sm"
-                        )}
-                        href={item.pathname}
-                        key={item.name}
-                      >
-                        {item.name}
-                      </Link>
+                        <Link
+                            aria-current={
+                              item.pathname === router.pathname ? "page" : false
+                            }
+                            className={classNames(
+                                item.pathname === router.pathname
+                                    ? "bg-gray-800 text-white"
+                                    : "text-gray-800 hover:bg-primary-700 hover:text-white",
+                                "px-3 py-2 rounded text-sm"
+                            )}
+                            href={item.pathname}
+                            key={item.name}
+                        >
+                          {item.name}
+                        </Link>
                     ))}
                   </div>
                 </div>
 
-                <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                  <DynamicWidget innerButtonComponent="Connect"></DynamicWidget>
+                <div
+                    className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                  <UserButton/>
                 </div>
               </div>
             </div>
@@ -92,8 +95,8 @@ const Header: React.FC = (): React.ReactElement => {
             <Disclosure.Panel className="sm:hidden">
               <div className="px-2 pt-2 pb-3 space-y-1">
                 {Navigation.map((item: NavigationItem) => (
-                  <Link
-                    aria-current={
+                    <Link
+                        aria-current={
                       item.pathname === router.pathname ? "page" : false
                     }
                     className={classNames(
