@@ -3,8 +3,7 @@ import Button from "@/components/UI/Button";
 import {DynamicConnectButton, DynamicNav, DynamicWidget} from "@dynamic-labs/sdk-react-core";
 
 const UserButton = () => {
-    const {user, dynContext, signMessage} = useApi();
-    console.log(dynContext.authToken);
+    const {user, dynamicContext, signMessage} = useApi();
     if (!user) {
         return <DynamicWidget innerButtonComponent="Connect"></DynamicWidget>;
     }
