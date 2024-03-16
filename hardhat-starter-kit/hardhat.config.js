@@ -22,6 +22,7 @@ const SEPOLIA_RPC_URL =
     process.env.SEPOLIA_RPC_URL;
 const MUMBAI_RPC_URL =
     process.env.MUMBAI_RPC_URL || "https://polygon-mumbai.g.alchemy.com/v2/your-api-key"
+    
 const PRIVATE_KEY = process.env.PRIVATE_KEY
 // optional
 const MNEMONIC = process.env.MNEMONIC || "Your mnemonic"
@@ -30,6 +31,8 @@ const FORKING_BLOCK_NUMBER = parseInt(process.env.FORKING_BLOCK_NUMBER) || 0
 // Your API key for Etherscan, obtain one at https://etherscan.io/
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "Your etherscan API key"
 const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "Your polygonscan API key"
+const ARBISCAN_API_KEY = process.env.ARBISCAN_API_KEY || "Your ARBISCAN API key"
+
 const REPORT_GAS = process.env.REPORT_GAS || false
 
 /** @type import('hardhat/config').HardhatUserConfig */
@@ -37,7 +40,7 @@ module.exports = {
     solidity: {
         compilers: [
             {
-                version: "0.8.7",
+                version: "0.8.19",
                 COMPILER_SETTINGS,
             },
             {
@@ -90,6 +93,11 @@ module.exports = {
             accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
             chainId: 80001,
         },
+        arbitrumSepolia: {
+            url: 'https://public.stackup.sh/api/v1/node/arbitrum-sepolia',
+            accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
+            chainId: 421614            
+        }
     },
     defaultNetwork: "hardhat",
     etherscan: {
@@ -100,8 +108,27 @@ module.exports = {
             mainnet: ETHERSCAN_API_KEY,
             polygon: POLYGONSCAN_API_KEY,
             polygonMumbai: POLYGONSCAN_API_KEY,
+            arbitrumOne: ARBISCAN_API_KEY,
+            // arbitrumGoerli: ARBISCAN_API_KEY,
+            arbitrumSepolia: ARBISCAN_API_KEY,
+            
         },
+        customChains: [
+            {
+              network: "arbitrumSepolia",
+              chainId: 421614,
+              urls: {
+                apiURL: "https://api.arbiscan.io/api",      
+                browserURL: "https://sepolia.arbiscan.io/"
+              }
+            }
+          ]
+        
     },
+    sourcify: {
+        enabled: true,
+    },
+
     gasReporter: {
         enabled: REPORT_GAS,
         currency: "USD",

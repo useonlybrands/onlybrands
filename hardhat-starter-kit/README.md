@@ -470,3 +470,20 @@ Contributions are always welcome! Open a PR or an issue!
 
 - [Chainlink Documentation](https://docs.chain.link/)
 - [Hardhat Documentation](https://hardhat.org/getting-started/)
+
+
+GOOD EXAMPEL APP	https://github.com/tomhirst/solidity-nextjs-starter 
+~/Downloads/boop/solidity-nextjs-starter
+
+#### DEPLOY TO arbtrium sepolia 
+
+npx hardhat run scripts/deployment/deployFunction.js --network mumbai
+npx hardhat run scripts/deployment/deployFunction.js --network arbitrumSepolia
+
+copy abi from here to the other lib 
+use remix to see the functoin consuemr 
+
+#### call the function
+
+npx hardhat call-function --contract 0xdAc6703d3dd8B4dCb769A44707CEEF2297Df4f8c
+where 0xda is the contract address on arbitrum sepolia 
