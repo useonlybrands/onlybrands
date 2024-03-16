@@ -2,7 +2,6 @@
 pragma solidity 0.8.19;
 
 import "@openzeppelin/contracts/utils/Strings.sol";
-// import "hardhat/console.sol";
 
 import { FunctionsClient } from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
 import { ConfirmedOwner } from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
@@ -45,19 +44,11 @@ contract Marketplace is FunctionsClient, ConfirmedOwner {
         string url
     );
 
-    event ConsoleLog(
-        string key,
-        uint _var
-    );
-
-    event ConsoleLogStr(
-        string key,
-        string _var
-    );
-
-      event ConsoleLogBytes(
-        string key,
-        bytes _var
+    event SettlementCompleted(
+        uint adId,
+        address influencer,
+        address brand,
+        uint views
     );
 
     /**
@@ -92,6 +83,8 @@ contract Marketplace is FunctionsClient, ConfirmedOwner {
     uint public nextAdId = 1;
     mapping(uint => Ad) public ads;
     OnlyToken public tokenContract;
+
+    mapping(bytes32 => uint) public requestIdToAdId;
 
     /**
      * @notice Initializes the Marketplace contract with the specified router address, donation ID, and source code for Chainlink function.
@@ -170,70 +163,42 @@ contract Marketplace is FunctionsClient, ConfirmedOwner {
         emit OfferRemoved(adId, ad.influencer, ad.brand);
     }
 
-    // JUT FOR TESTING
-    function testStartSettlement(string[] calldata args) external returns (bytes32 requestId) {
-        // emit ConsoleLogStr("id", args[0]);
-        // emit ConsoleLogStr("url", args[1]);
-        // // Send request to Chainlink to verify views 
-        // FunctionsRequest.Request memory req;
-        // req.initializeRequestForInlineJavaScript(source); // Initialize the request with JS code
-        // if (args.length > 0) req.setArgs(args); // Set the arguments for the request
+    /**
+     * @notice Initiates the settlement process for an advertisement
+     * @param adId The ID of the advertisement to settle
+     * @param url The URL of the post to verify views
+     */
+    function startSettlement(uint adId, string memory url) external returns (bytes32 requestId) {
+        Ad storage ad = ads[adId];
+        require(ad.influencer == msg.sender, "Only the influencer can initiate settlement");
+        require(ad.status == Status.Live, "Ad must be live to initiate settlement");
 
-        // // Send the request and store the request ID
-        // requestId = _sendRequest(
-        //     req.encodeCBOR(),
-        //     subscriptionId,
-        //     gasLimit,
-        //     donID
-        // );
+        ad.status = Status.Settling;
+
+        // Construct arguments array for Chainlink request
+        string[] memory args = new string[](2);
+        args[0] = Strings.toString(adId);
+        args[1] = url;
+
+        emit SettlementStarted(adId, ad.influencer, ad.brand, url);
+
+        // Send request to Chainlink to verify views 
         FunctionsRequest.Request memory req;
         req.initializeRequestForInlineJavaScript(source); // Initialize the request with JS code
         if (args.length > 0) req.setArgs(args); // Set the arguments for the request
 
         // Send the request and store the request ID
-        bytes32 s_lastRequestId = _sendRequest(
+        requestId = _sendRequest(
             req.encodeCBOR(),
             subscriptionId,
             gasLimit,
             donID
         );
 
-        return s_lastRequestId;
+        requestIdToAdId[requestId] = adId;
 
+        return requestId;
     }
-
-    // /**
-    //  * @notice Initiates the settlement process for an advertisement
-    //  * @param adId The ID of the advertisement to settle
-    //  * @param url The URL of the post to verify views
-    //  */
-    // function startSettlement(uint adId, string memory url) external returns (bytes32 requestId) {
-    //     Ad storage ad = ads[adId];
-    //     require(ad.influencer == msg.sender, "Only the influencer can initiate settlement");
-    //     require(ad.status == Status.Live, "Ad must be live to initiate settlement");
-
-    //     ad.status = Status.Settling;
-
-    //     // Construct arguments array for Chainlink request
-    //     string[] memory args = new string[](2);
-    //     args[0] = Strings.toString(adId);
-    //     args[1] = url;
-
-    //     emit SettlementStarted(adId, ad.influencer, ad.brand, url);
-
-    //     // Send request to Chainlink to verify views 
-    //     FunctionsRequest.Request memory req;
-    //     req.initializeRequestForInlineJavaScript(source); // Initialize the request with JS code
-    //     if (args.length > 0) req.setArgs(args); // Set the arguments for the request
-
-    //     // Send the request and store the request ID
-    //     requestId = _sendRequest(
-    //         req.encodeCBOR(),
-    //         subscriptionId,
-    //         gasLimit,
-    //         donID
-    //     );
-    // }
 
     /**
      * @notice Callback function for Chainlink to call once the request is fulfilled
@@ -245,44 +210,31 @@ contract Marketplace is FunctionsClient, ConfirmedOwner {
         bytes32 requestId,
         bytes memory response,
         bytes memory err
-    ) internal override {
-        
-        if (response.length > 0) {
-            // (
-            //     uint id,
-            //     uint views
-            // ) = abi.decode(response, (uint, uint));
-
-            // emit ConsoleLog("id", id);
-            // emit ConsoleLog("views", views);
-            emit ConsoleLogBytes("result", response);
-        } else {
-            emit ConsoleLogBytes("fuck", err);
-        }
-        // super.fulfillRequest(requestId, response, err);
-
-        // // Decode the response to get views count
-        // uint256 viewsFromChainlink = abi.decode(response, (uint256));
-        // uint256 adId = abi.decode(err, (uint256)); // Assuming adId is passed back as 'err' for demonstration
-
-        // Ad storage ad = ads[adId];
-        // require(ad.status == Status.Settling, "Ad must be in settling status");
-
-        // if (viewsFromChainlink >= ad.views) {
-        //     // Full payment to influencer as views target met
-        //     tokenContract.transfer(ad.influencer, ad.paymentAmount);
-        // } else {
-        //     // Calculate payment based on views achieved
-        //     uint256 paymentToInfluencer = (ad.paymentAmount * viewsFromChainlink) / ad.views;
-        //     uint256 refundToBrand = ad.paymentAmount - paymentToInfluencer;
-
-        //     tokenContract.transfer(ad.influencer, paymentToInfluencer);
-        //     tokenContract.transfer(ad.brand, refundToBrand);
+    ) internal override { 
+        // if(response.length == 0) {
+        //     return;
         // }
+        // todo: handle errors later
+        uint views = abi.decode(response, (uint256));
+        uint adId = requestIdToAdId[requestId];
 
-        // ad.status = Status.Settled;
+        Ad storage ad = ads[adId];
+        require(ad.status == Status.Settling, "Ad must be in settling status");
 
-        // emit SettlementCompleted(adId, ad.influencer, ad.brand, viewsFromChainlink);
+        if (views >= ad.views) {
+            // Full payment to influencer as views target met
+            tokenContract.transfer(ad.influencer, ad.paymentAmount);
+        } else {
+            // Calculate payment based on views achieved
+            uint paymentToInfluencer = (ad.paymentAmount * views) / ad.views;
+            uint refundToBrand = ad.paymentAmount - paymentToInfluencer;
 
+            tokenContract.transfer(ad.influencer, paymentToInfluencer);
+            tokenContract.transfer(ad.brand, refundToBrand);
+        }
+
+        emit SettlementCompleted(adId, ad.influencer, ad.brand, views);
+
+        delete ads[adId];
     }
 }

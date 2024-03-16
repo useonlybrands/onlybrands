@@ -20,7 +20,11 @@ async function deployMarketplace() {
     const path = require('path');
     const _source = fs.readFileSync(path.join(__dirname, "../../contracts/myFunction.js"), "utf8");
 
-    console.log(`source: ${_source}`)
+    console.log(`Source code for the Chainlink Function: 
+    
+    ${_source}
+    
+    `)
     const _tokenContract = '0x5B557183636e4b72F05721036F3655af5885f282' // its hardcoded for now woops 
     console.log(`using $ONLY at ${_tokenContract}. its' hardcoded, woops.`)
 
