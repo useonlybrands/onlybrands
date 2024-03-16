@@ -5,20 +5,19 @@ export interface Influencer {
   "wallet": string,
   "platform": string,
   "industries": string,
-  "follower_count": number,
+  "followerCount": number,
   // "language": string,
   "sex": string,
   "age": number,
-  "rating": number,
   "image": string
 }
 
-export interface JobCardItemProps {
-  job: Influencer;
+export interface InfluencerCardItemProps {
+  influencer: Influencer;
 }
 
-export interface JobContentProps {
-  job: Influencer;
+export interface InfluencerContentProps {
+  influencer: Influencer;
 }
 
 export interface JobActionsProps {

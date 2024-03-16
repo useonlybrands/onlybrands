@@ -1,4 +1,4 @@
-import JobsList from '@/components/Influencers/JobsList';
+import InfluencersList from '@/components/Influencers/InfluencersList';
 import Hero from '@/components/UI/Hero';
 import Head from '@/components/partials/Head';
 import { useSavedJobs } from '@/hooks/useSavedJobs';

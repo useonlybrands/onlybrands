@@ -120,12 +120,11 @@ const Profile = () => {
                 <div className="flex items-end mb-1">
                   <Avatar avatar={userData?.image} isRounded size="md" />
 
-                  {/* {userData?.certified && (
+                  {(
                     <div className="relative top right-5" title="Certified account">
                       <CheckCircleIcon className="w-4 h-4 bg-white rounded-full text-primary-500" />
                     </div>
-                  )} we dont do certified right*/} 
-                  
+                  )}
                 </div>
 
 
