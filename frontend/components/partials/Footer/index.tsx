@@ -14,15 +14,15 @@ const Footer: React.FC = (): React.ReactElement => {
       <section className="flex flex-col items-center justify-center w-full h-full px-4 mx-auto text-center max-w-7xl">
         {/* <h1 className="mb-6 text-3xl font-semibold">The best place to start your tech career.</h1> */}
         {user ? (
-          <h1 className="mb-6 text-3xl font-semibold">Post a job and find your next hire.</h1>
+          <h1 className="mb-6 text-3xl font-semibold">Sponsor content creators and boost your sales.</h1>
         ) : (
-          <h1 className="mb-6 text-3xl font-semibold">Find your first job in tech.</h1>
+          <h1 className="mb-6 text-3xl font-semibold">Sponsor content creators and boost your sales.</h1>
         )}
         <p className="mb-10 text-2xl text-gray-600 font-extralight">
           {user ? (
-            <small>Post a job and find your next hire.</small>
+            <small>Sponsor content creators and boost your sales.</small>
           ) : (
-            <small>Find your first job in tech.</small>
+            <small>Sponsor content creators and boost your sales.</small>
           )}
         </p>
 
@@ -47,7 +47,7 @@ const Footer: React.FC = (): React.ReactElement => {
       <hr className="w-full h-[1px] border-gray-300" />
       <section className="flex  items-center justify-between w-full px-8  text-center h-[120px] max-w-7xl mx-auto">
         <p className="text-lg text-gray-600 font-extralight">
-          <small>© {year} EntryLevels.io All rights reserved.</small>
+          <small>© {year} OnlyBrands. All rights reserved.</small>
         </p>
         <nav className="flex items-start justify-between space-x-4 list-none">
           {Navigation.map((item) => (

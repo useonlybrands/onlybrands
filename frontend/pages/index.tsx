@@ -39,7 +39,7 @@ const Home = (): React.ReactElement => {
 
   useEffect(() => {
     const role = user?.user_metadata?.role;
-    const title = role === ROLES.COMPANY ? 'Post a job' : 'Find a job';
+    const title = role === ROLES.COMPANY ? 'Find an influencer' : 'Manage bids';
     const path = role === ROLES.COMPANY ? '/jobs/new' : '/jobs';
 
     setAction({
@@ -56,7 +56,7 @@ const Home = (): React.ReactElement => {
       <section className="flex flex-col w-full gap-10 mx-auto max-w-8xl sm:grid sm:grid-cols-12">
         <section className="col-span-12 lg:col-span-8 h-fit">
           <header className="flex flex-col items-center justify-between pb-6 pl-5 sm:flex-row">
-            <h2 className="text-lg font-semibold sm:text-xl md:text-2xl">Job postings</h2>
+            <h2 className="text-lg font-semibold sm:text-xl md:text-2xl">Content creators</h2>
 
             <div className="flex flex-col items-end gap-2">
               <JobsSortBy onChange={handleFiltersChange} />

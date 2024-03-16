@@ -1,6 +1,6 @@
-import ClientApi from '@/utils/initDatabase';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react'
 
+const ClientApi = {};
 const useJobs = (contentType, query) => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
