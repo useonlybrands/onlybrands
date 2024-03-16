@@ -10,7 +10,7 @@ import {
   onlyContract_ADDRESS,
 } from "@/constants/contracts";
 import { PublicClient, WalletClient } from "viem";
-import {Influencer} from "@/components/Influencers/JobsItem/types";
+import { Influencer } from "@/components/Influencers/JobsItem/types";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 type AuthFetch = (
@@ -105,7 +105,7 @@ export const useApi: () => UseApi = () => {
           },
           method: "POST",
           body: JSON.stringify({
-            object: profile.brandInfo
+            object: profile.brandInfo,
           }),
         });
       case ROLES.INFLUENCER:
@@ -115,7 +115,7 @@ export const useApi: () => UseApi = () => {
           },
           method: "POST",
           body: JSON.stringify({
-            object: profile.influencerInfo
+            object: profile.influencerInfo,
           }),
         });
     }
@@ -126,8 +126,8 @@ export const useApi: () => UseApi = () => {
       console.log(dynamicContext.authToken);
       try {
         const profileRes = await authFetch(
-            `/user/${dynamicContext.user?.username}`,
-            dynamicContext.authToken
+          `/user/${dynamicContext.user?.username}`,
+          dynamicContext.authToken
         );
         const profile = await profileRes.json();
         setBackendProfile(profile);
@@ -141,7 +141,8 @@ export const useApi: () => UseApi = () => {
 
   const fetchBalance = async () => {
     if (!dynamicContext.walletConnector) return;
-    const publicClient = await dynamicContext.walletConnector.getPublicClient();
+    const publicClient: any =
+      await dynamicContext.walletConnector.getPublicClient();
 
     const result = await publicClient.readContract({
       address: onlyContract_ADDRESS,
