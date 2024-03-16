@@ -4,6 +4,7 @@ import {
   passwordValidation,
   phoneValidation,
   requiredString,
+  requiredNumber,
   stringOrArray,
   url,
 } from "./helpers";
@@ -70,6 +71,29 @@ export const PLATFORM_OPTIONS = [
   },
 ];
 
+export const LIST_OF_COUNTRIES = [
+  { name: "Spain", id: "spain" },
+  { name: "United States", id: "usa" },
+  { name: "United Kingdom", id: "uk" },
+  { name: "Canada", id: "canada" },
+  { name: "Australia", id: "australia" },
+  { name: "France", id: "france" },
+  { name: "Germany", id: "germany" },
+  { name: "Italy", id: "italy" },
+  { name: "Japan", id: "japan" },
+  { name: "China", id: "china" },
+  { name: "India", id: "india" },
+  { name: "Brazil", id: "brazil" },
+  { name: "Mexico", id: "mexico" },
+  { name: "Argentina", id: "argentina" },
+  { name: "Russia", id: "russia" },
+  { name: "South Africa", id: "south-africa" },
+  { name: "South Korea", id: "south-korea" },
+  { name: "Turkey", id: "turkey" },
+  { name: "Saudi Arabia", id: "saudi-arabia" },
+  { name: "Netherlands", id: "netherlands" },
+];
+
 export const ROLES = {
   INFLUENCER: "influencer",
   BRAND: "brand",
@@ -97,7 +121,7 @@ export const INITIAL_VALUES = {
   brandName: "",
   brandDescription: "",
   brandWebsite: "",
-  industry: [],
+  industries: [],
   size: [],
   location: [],
   avatar_url: "",
@@ -122,9 +146,16 @@ export const INFLUENCER_FIELDS = [
     type: "text",
   },
   {
-    name: "username",
-    label: "Username",
-    placeholder: "Enter a unique username",
+    name: "gender",
+    label: "Gender",
+    placeholder: "What is your gender?",
+    required: true,
+    type: "text",
+  },
+  {
+    name: "age",
+    label: "Age",
+    placeholder: "Enter your age",
     required: true,
     type: "text",
   },
@@ -136,7 +167,7 @@ export const INFLUENCER_FIELDS = [
     type: "text",
   },
   {
-    name: "industry",
+    name: "industries",
     label: "Industry",
     placeholder: "What is your Industry?",
     required: true,
@@ -164,15 +195,6 @@ export const BRAND_FIELDS = [
     type: "text",
   },
   {
-    name: "phone",
-    label:
-      'Phone <small style="color: #aaa; position: relative; top: -3px">(optional)</small>',
-    placeholder: "What is your brand phone?",
-    required: false,
-    type: "text",
-  },
-
-  {
     name: "brandWebsite",
     label: "Website",
     placeholder: "What is the website of your brand?",
@@ -180,22 +202,13 @@ export const BRAND_FIELDS = [
     type: "text",
   },
   {
-    name: "location",
-    label: "Location",
-    placeholder: "What is the location of your brand?",
-    required: true,
-    type: "select",
-    options: [],
-    multiple: false,
-  },
-  {
-    name: "industry",
+    name: "industries",
     label: "Industry",
     placeholder: "What is the industry of your brand?",
     required: true,
     type: "select",
     options: INDUSTRY_OPTIONS,
-    multiple: false,
+    multiple: true,
   },
   {
     name: "size",
@@ -246,27 +259,17 @@ export const BRAND_FIELDS = [
 
 export const InfluencerSchemaValidation = Yup.object().shape({
   name: requiredString("name"),
-  username: requiredString("username"),
   email: emailValidation("email address"),
+  age: requiredNumber("age"),
   platform: stringOrArray("platform"),
-  industry: stringOrArray("industry"),
+  industries: stringOrArray("industries"),
 });
 
 export const BrandSchemaValidation = Yup.object().shape({
-  name: requiredString("name"),
-  email: emailValidation("email address"),
-  phone: phoneValidation("phone number"),
-  password: passwordValidation("password"),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password"), null], "Passwords must match")
-    .required("Please confirm your password"),
-  brandName: requiredString("brand name"),
-  brandWebsite: url("How To Apply").required(
-    "The how to apply URL is required"
-  ),
-  industry: stringOrArray("Industry"),
+  brandName: requiredString("brandName"),
+  brandWebsite: requiredString("brandWebsite"),
+  industries: stringOrArray("Industry"),
   size: stringOrArray("Size"),
-  location: stringOrArray("Location"),
   brandDescription: requiredString("brand description")
     .max(2000, "Must be 2000 characters or less")
     .min(500, "Must be 500 characters or more"),

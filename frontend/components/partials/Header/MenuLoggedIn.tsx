@@ -48,7 +48,7 @@ const MenuLoggedIn: React.FC = (): React.ReactElement => {
 
     const newNavigation: NewNavigationItem[] = [
       ...Navigation,
-      { label: 'Saved Jobs', href: '/saved-jobs' },
+      { label: 'Saved Influencers', href: '/saved-jobs' },
     ];
 
     Navigation.splice(0, Navigation.length, ...newNavigation);
@@ -109,7 +109,7 @@ const MenuLoggedIn: React.FC = (): React.ReactElement => {
                       href={item.href}
                     >
                       {item.label}
-                      {item.label === 'Saved Jobs' && savedJobsCount > 0 && (
+                      {item.label === 'Saved Influencers' && savedJobsCount > 0 && (
                         <div
                           className=" grid w-3.5 h-3.5 p-2 text-xs font-bold rounded-full place-content-center bg-primary-500 text-white"
                           title={`${savedJobsCount} saved job${savedJobsCount > 1 ? 's' : ''}`}

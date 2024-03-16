@@ -1,6 +1,6 @@
 import JobSidebar from '@/components/Job/JobSidebar';
-import JobTags from '@/components/Jobs/JobTags';
-import JobActions from '@/components/Jobs/JobsItem/JobActions';
+import JobTags from '@/components/Influencers/JobTags';
+import JobActions from '@/components/Influencers/JobsItem/JobActions';
 import { timeSince } from '@/utils/formatDate';
 import { useUser } from '@supabase/auth-helpers-react';
 import Image from 'next/image';
