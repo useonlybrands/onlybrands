@@ -121,7 +121,7 @@ export const useApi: () => UseApi = () => {
     const loadData = async () => {
       console.log(dynamicContext.authToken);
       const profileRes = await authFetch(
-        `/user/${dynamicContext.user.username}`,
+        `/user/${dynamicContext.user?.username}`,
         dynamicContext.authToken
       );
       try {
