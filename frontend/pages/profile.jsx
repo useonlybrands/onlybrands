@@ -8,60 +8,29 @@ import { useUser } from '@supabase/auth-helpers-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Fragment, useEffect, useState } from 'react';
+import {useApi} from "../hooks/useApi";
 
 const UPLOAD_IMAGE_PATH = process.env.NEXT_PUBLIC_SUPABASE_UPLOAD_IMAGE_PATH;
 // I guess I should add stuff here
 const Profile = () => {
   const router = useRouter();
-  const user = useUser();
-  const userData = user?.user_metadata;
+  const {user, profile, dynamicContext} = useApi();
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [userMapped, setUserMapped] = useState({});
-
-  const getAvatarPath = (avatarURL) => {
-    if (avatarURL?.startsWith('/avatars') || avatarURL?.startsWith('/company-logos')) {
-      return `${UPLOAD_IMAGE_PATH}${avatarURL}`;
-    }
-    return avatarURL;
-  };
-
-  const AVATAR_PATH = getAvatarPath(userData?.avatar_url);
-
-  const mappedUser = (user) => {
-    if (!user) {
-      return {};
-    }
-
-    switch (process.env.NEXT_PUBLIC_PROVIDER_NAME) {
-      case PROVIDERS.SUPABASE:
-        return {
-          id: user.id,
-          name: userData?.name,
-          email: user.email,
-          phone: user.phone,
-          avatar: AVATAR_PATH,
-          createdAt: user.created_at,
-        };
-      case PROVIDERS.FIREBASE:
-        return {
-          id: user.uid,
-          name: user.displayName,
-          email: user.email,
-          avatar: user.photoURL,
-          createdAt: user?.metadata?.creationTime,
-        };
-      default:
-        return {};
-    }
-  };
-
+  const [userData, setuserData] = useState({});
   useEffect(() => {
-    if (!user?.id) {
+    if (!dynamicContext.isAuthenticated) {
       void router.push('/login');
     }
+    console.log({
+      ...user,
+      ...profile
+    });
+    setuserData({
+      ...user,
+      ...profile
+    });
 
-    setUserMapped(mappedUser(user));
-  }, [user?.id]);
+  }, [dynamicContext.isAuthenticated]);
 
   return (
     <>
@@ -105,7 +74,7 @@ const Profile = () => {
             <Tab.Panel>
               <section className="flex flex-col items-center justify-center py-5 space-y-2 text-gray-800">
                 <div className="flex items-end mb-1">
-                  <Avatar avatar={userMapped?.avatar} isRounded size="md" />
+                  <Avatar avatar={userData?.avatar} isRounded size="md" />
 
                   {userData?.certified && (
                     <div className="relative top right-5" title="Certified account">
@@ -115,22 +84,22 @@ const Profile = () => {
                 </div>
 
                 <div>
-                  <h1 className="mb-1 text-xl font-semibold">{userMapped.name}</h1>
+                  <h1 className="mb-1 text-xl font-semibold">{userData.name}</h1>
 
                   <div className="flex items-center justify-center space-x-2">
-                    <Link href={`mailto:${userMapped.email}`} title="Drop me a message">
+                    <Link href={`mailto:${userData.email}`} title="Drop me a message">
                       <EnvelopeIcon className="inline-block w-5 h-5" />
                     </Link>
-                    {userMapped.phone && (
-                      <Link href={`mailto:${userMapped.phone}`} title="Drop me a message">
+                    {userData.phone && (
+                      <Link href={`mailto:${userData.phone}`} title="Drop me a message">
                         <PhoneIcon className="inline-block w-5 h-5" />
                       </Link>
                     )}
                   </div>
 
-                  {userMapped.phone && (
+                  {userData.phone && (
                     <p className="text-sm">
-                      <span className="font-semibold">Phone:</span> {userMapped.phone}
+                      <span className="font-semibold">Phone:</span> {userData.phone}
                     </p>
                   )}
                 </div>
