@@ -20,17 +20,21 @@ const Profile = () => {
   // const {user, profile, dynamicContext} = useApi();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [userData, setuserData] = useState({
-    username: "vrebol",
+    username: "something",
     name:"George Costanza",
-    email: "vid.rebol11@gmail.com",
+    email: "example@gmail.com",
     wallet: "nfewisndgprbsfuoidkbuewops32768",
     platform: "Instagram",
     industry: "Lifestyle",
+    follower_count: 129384,
     sex: "Male",
     age:30,
+    language: "english",
+
     //phone: 40392439479, we dont do phone right
     image: "https://pbs.twimg.com/profile_images/708090673208033280/_RcBYLyg_400x400.jpg"
   });
+
   // useEffect(() => {
   //   if (!dynamicContext.isAuthenticated) {
   //     void router.push('/login');
@@ -45,6 +49,12 @@ const Profile = () => {
   //   });
   //
   // }, [dynamicContext.isAuthenticated]);
+
+  const [showWallet, setShowWallet] = useState(false);
+
+  const toggleWallet = () => {
+    setShowWallet(!showWallet);
+  };
 
   const handleVerify = async (proof: ISuccessResult) => {
       const res = await fetch("/world-verify", { // route to your backend will depend on implementation
@@ -107,7 +117,7 @@ const Profile = () => {
             <Tab.Panel>
               <section className="flex flex-col items-center justify-center py-5 space-y-2 text-gray-800">
                 <div className="flex items-end mb-1">
-                  <Avatar avatar={userData?.avatar} isRounded size="md" />
+                  <Avatar avatar={userData?.image} isRounded size="md" />
 
                   {/* {userData?.certified && (
                     <div className="relative top right-5" title="Certified account">
@@ -117,21 +127,51 @@ const Profile = () => {
                   
                 </div>
 
-                <div>
-                  <h1 className="mb-1 text-xl font-semibold">{userData.name}</h1>
+                <h1 className="mb-1 text-xl font-bold">{userData.name}</h1>
+                <div className="flex flex-col items-center justify-center space-y-3">
+                <div className="flex flex-col items-center justify-center space-y-2">
+                  <h3 className="mb-1 text-l font-semibold">@{userData.username}</h3>
+                  
+                  <br></br>
+                  
 
-                  <h3 className="mb-1 text-xl font-semibold justify-center items-center">{userData.username}</h3>
 
+
+
+                  <h3 className="mb-1 text-l justify-center items-center space-x-2">Platform: {userData.platform}</h3>
+
+                  <h3 className="mb-1 text-l justify-center items-center space-x-2">Industry: {userData.industry}</h3>
+
+                  <h3 className="mb-1 text-l justify-center items-center space-x-2">Followers: {userData.follower_count}</h3>
+
+                  <h3 className="mb-1 text-l justify-center items-center space-x-2">Sex: {userData.sex}</h3>
+
+                  <h3 className="mb-1 text-l  justify-center items-center space-x-2">Age: {userData.age}</h3>
+
+                  <h3 className="mb-1 text-l font-normal justify-center items-center space-x-2">Language: {userData.language}</h3>
+                  
                   <div className="flex items-center justify-center space-x-2">
                     <Link href={`mailto:${userData.email}`} title="Drop me a message">
                       <EnvelopeIcon className="inline-block w-5 h-5" />
                     </Link>
-                    {/* {userData.phone && (
+                    {/* {{userData.phone && (
                       <Link href={`mailto:${userData.phone}`} title="Drop me a message">
-                        <PhoneIcon className="inline-block w-5 h-5" />
+                      <PhoneIcon className="inline-block w-5 h-5" />
                       </Link>
-                    )} */}
+                    )}} */}
                   </div>
+                  <div>
+                    {!showWallet && (
+                      <h3 className="text-primary-700 mb-1 text-l font-semibold cursor-pointer" onClick={toggleWallet}>Wallet address</h3>
+                    )}
+                    {showWallet && (
+                      <h3 className="mb-1 text-l font-semibold" onClick={toggleWallet}>{userData.wallet}</h3>
+                    )}
+                  </div>
+                  
+                  </div>
+                  
+
 
                   {/* {userData.phone && (
                     <p className="text-sm">
@@ -141,8 +181,8 @@ const Profile = () => {
 
                   <div>
                   <IDKitWidget
-                      app_id="example" // obtained from the Developer Portal
-                      action="example" // obtained from the Developer Portal
+                      app_id="app_staging_36f4ed912bf5790caf5fdb754bc5bf3c" // obtained from the Developer Portal
+                      action="sign-in-action" // obtained from the Developer Portal
                       onSuccess={onSuccess} // callback when the modal is closed
                       handleVerify={handleVerify} // callback when the proof is received
                       verification_level={VerificationLevel.Orb}
