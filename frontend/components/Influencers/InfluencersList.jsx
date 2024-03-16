@@ -54,7 +54,7 @@ const InfluencersList = ({ loading, error, influencers }) => {
             influencers.map((influencer) => {
             return (
               <li className="w-full" key={influencer.username}>
-                <JobCardItem job={influencer} />
+                <JobCardItem influencer={influencer} />
               </li>
             );
           })}

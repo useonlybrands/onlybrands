@@ -107,14 +107,13 @@ const Profile = () => {
             <Tab.Panel>
               <section className="flex flex-col items-center justify-center py-5 space-y-2 text-gray-800">
                 <div className="flex items-end mb-1">
-                  <Avatar avatar={userData?.avatar} isRounded size="md" />
+                  <Avatar avatar={userData?.image} isRounded size="md" />
 
-                  {/* {userData?.certified && (
+                  {(
                     <div className="relative top right-5" title="Certified account">
                       <CheckCircleIcon className="w-4 h-4 bg-white rounded-full text-primary-500" />
                     </div>
-                  )} we dont do certified right*/} 
-                  
+                  )}
                 </div>
 
                 <div>

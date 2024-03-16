@@ -1,13 +1,13 @@
 import JobCard from '@/components/Influencers/JobsItem';
 import Hero from '@/components/UI/Hero';
-import ClientApi from '@/utils/initDatabase';
+// import ClientApi from '@/utils/initDatabase';
 import Loader from '@/components/UI/Loader';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import { GetServerSideProps } from 'next';
-
+const ClientApi = {};
 const JobsByCompany = ({ jobs, error }) => {
   const { push, query } = useRouter();
   const { company } = query;
