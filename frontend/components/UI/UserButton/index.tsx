@@ -11,11 +11,13 @@ const UserButton = () => {
     }
     return (
         <div className="flex flex-row">
-            <div
-                // onClick={() => signMessage("Test")}
-                className="rounded-md align-middle pt-2.5 pr-2 pl-2 mr-2 bg-gray-200 w-full max-w-fit h-[40px] text-sm font-semibold">
-                {formatEther(balance)} $ONLY
-            </div>
+            {balance && (
+                <div
+                    // onClick={() => signMessage("Test")}
+                    className="rounded-md align-middle pt-2.5 pr-2 pl-2 mr-2 bg-gray-200 w-full max-w-fit h-[40px] text-sm font-semibold">
+                    {formatEther(balance)} $ONLY
+                </div>
+            )}
             <div
                 // onClick={() => signMessage("Test")}
                 className="rounded-md align-middle pt-2.5 pr-2 pl-2 mr-[-5px] bg-gray-200 w-full max-w-fit h-[40px] text-sm font-semibold">
