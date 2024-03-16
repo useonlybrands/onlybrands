@@ -1,6 +1,4 @@
-import {
-  DynamicContextProvider,
-} from "@dynamic-labs/sdk-react-core";
+import { DynamicContextProvider } from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import Layout from "@/components/partials/Layout";
 import { AppProps } from "@/types";
@@ -9,6 +7,7 @@ import "@/styles/globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import { evmNetworks } from "@/utils/dyanmicNetworks";
 import router from "next/router";
+import Button from "@/components/UI/Button";
 
 const App = (props: AppProps): JSX.Element => {
   const { Component, pageProps } = props;
@@ -17,35 +16,25 @@ const App = (props: AppProps): JSX.Element => {
     <DynamicContextProvider
       settings={{
         eventsCallbacks: {
-          onConnect: (args) => {
-            router.push("/login");
-            console.log("yooo");
+          onAuthSuccess: (args) => {
+            router.push("/register");
+            console.log("USER CONNECTED... REDIRECTING TO REGISTER", args);
           },
         },
         environmentId: process.env.NEXT_PUBLIC_DYNAMIC_ENV_ID || "",
         walletConnectors: [EthereumWalletConnectors],
         evmNetworks,
-        policiesConsentInnerComponent: (
+        logLevel: "DEBUG",
+        debugError: true,
+        displaySiweStatement: true,
+        customPrivacyPolicy: (
           <div>
-            <p>
-              By clicking “Connect”, you agree to our{" "}
-              <a
-                href="https://www.dynamic.xyz/terms-of-service"
-                target="_blank"
-              >
-                Terms of Service
-              </a>{" "}
-              and{" "}
-              <a href="https://www.dynamic.xyz/privacy-policy" target="_blank">
-                Privacy Policy
-              </a>
-              .
-            </p>
+          {/* DO THE CONNECT WITH WORLDCOIN */}
+            <Button>Connect</Button>
           </div>
         ),
       }}
     >
-      
       <Layout>
         <Component {...pageProps} />
         <ToastContainer
