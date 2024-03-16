@@ -99,8 +99,7 @@ export const useApi: () => UseApi = () => {
     useEffect(() => {
         const loadData = async () => {
             console.log(dynamicContext.authToken)
-            await authFetch("/get_profile", dynamicContext.authToken);
-            const profileRes = await authFetch("/get_profile", dynamicContext.authToken);
+            const profileRes = await authFetch(`/user/${dynamicContext.user.username}`, dynamicContext.authToken);
             try {
                 const profile = await profileRes.json();
                 setBackendProfile(profile);
