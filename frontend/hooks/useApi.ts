@@ -29,6 +29,7 @@ const authFetch: AuthFetch = (url, authToken, init = undefined) => {
 };
 
 export interface BrandInfo {
+  username: string;
   name: string;
   email: string;
   wallet: string;
