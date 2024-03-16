@@ -74,5 +74,41 @@ const donID = "0x66756e2d617262697472756d2d7365706f6c69612d310000000000000000000
             assert.equal(brandBalanceAfter.toString(), "0");
             assert.equal(contractBalanceAfter.toString(), "100000000000000000000");
         })
+
+        it("Accept offer correctly", async () => {
+            let onlyContract;
+            const [deployer, brand, influencer] = await ethers.getSigners()
+            
+            const OnlyFactory = await ethers.getContractFactory("OnlyToken")
+            onlyContract = await OnlyFactory.connect(deployer).deploy()
+            
+            const MarketplaceFactory = await ethers.getContractFactory("Marketplace");
+            
+            const marketplaceContract = await MarketplaceFactory.connect(deployer).deploy(router, donID, source, onlyContract.address);
+
+            const amt = "100000000000000000000";
+            // transfer to the brand 100 $ONLY  
+            await onlyContract.connect(deployer).transfer(brand.address, amt)
+            
+            // First give access to 100 tokens 
+            await onlyContract.connect(brand).approve(marketplaceContract.address, amt);
+
+            const adId = (await marketplaceContract.nextAdId()).toString();
+            const views = 1000;
+            const paymentAmount = amt;
+
+            await marketplaceContract.connect(brand).createOffer(influencer.address, views, paymentAmount);
+
+            await marketplaceContract.connect(influencer).acceptOffer(adId);
+
+            const updatedOffer = await marketplaceContract.ads(adId);
+            assert.equal(updatedOffer.status, 2); // Status.Live is represented by 2
+            assert.equal(updatedOffer.id, adId);
+            assert.equal(updatedOffer.influencer, influencer.address);
+            assert.equal(updatedOffer.brand, brand.address);
+            assert.equal(updatedOffer.paymentAmount, paymentAmount);
+            assert.equal(updatedOffer.views, views);
+
+        })
     })
 })
