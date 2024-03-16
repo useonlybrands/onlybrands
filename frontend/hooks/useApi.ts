@@ -1,8 +1,31 @@
+import { ROLES } from "@/constants/register";
 import { useDynamicContext, UserProfile } from "@dynamic-labs/sdk-react-core";
 import { useEffect, useState } from "react";
 import { UseDynamicContext } from "@dynamic-labs/sdk-react-core/src/lib/context/DynamicContext/useDynamicContext";
-import { onlyContract_ABI, onlyContract_ADDRESS } from "@/constants/contracts";
-import { ROLES } from "@/constants/register";
+import {
+  chain_ID,
+  marketplaceContract_ABI,
+  marketplaceContract_ADDRESS,
+  onlyContract_ABI,
+  onlyContract_ADDRESS,
+} from "@/constants/contracts";
+import { PublicClient, WalletClient } from "viem";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+
+type AuthFetch = (
+  url: string,
+  bearerToken: string,
+  init?: RequestInit
+) => Promise<Response>;
+const authFetch: AuthFetch = (url, authToken, init = undefined) => {
+  return fetch(API_BASE_URL + url, {
+    ...init,
+    headers: {
+      ...(init?.headers || {}),
+      Authorization: `Bearer ${authToken}`,
+    },
+  });
+};
 
 export interface BrandInfo {}
 export interface InfluencerInfo {
@@ -34,6 +57,7 @@ export interface BidInfo {
   status: string;
   // ... other fields
   budget: number;
+  impressions: number;
 }
 
 export interface UseApi {
@@ -42,8 +66,8 @@ export interface UseApi {
   dynamicContext: UseDynamicContext;
   signMessage: (message: string) => any;
   profile?: BackendProfile;
-  updateProfile: (BackendProfile) => Promise<Response>;
-  submitBid: (BidInfo) => Promise<void>;
+  updateProfile: (profile: BackendProfile) => Promise<Response>;
+  submitBid: (bidInfo: BidInfo) => Promise<void>;
   fetchBalance: () => Promise<any>;
   balance?: bigint;
 }
@@ -75,7 +99,7 @@ export const useApi: () => UseApi = () => {
     console.log("profile:", profile);
     switch (profile.profileType) {
       case ROLES.BRAND:
-        return fetch("/create_brand", {
+        return authFetch("/create_brand", dynamicContext.authToken, {
           headers: {
             Authorization: `Bearer ${dynamicContext.authToken}`,
           },
@@ -83,7 +107,7 @@ export const useApi: () => UseApi = () => {
           body: JSON.stringify(profile.brandInfo),
         });
       case ROLES.INFLUENCER:
-        return fetch("/create_influencer", {
+        return authFetch("/create_influencer", dynamicContext.authToken, {
           headers: {
             Authorization: `Bearer ${dynamicContext.authToken}`,
           },
@@ -95,11 +119,12 @@ export const useApi: () => UseApi = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      const profileRes = await fetch("/get_profile", {
-        headers: {
-          Authorization: `Bearer ${dynamicContext.authToken}`,
-        },
-      });
+      console.log(dynamicContext.authToken);
+      await authFetch("/get_profile", dynamicContext.authToken);
+      const profileRes = await authFetch(
+        "/get_profile",
+        dynamicContext.authToken
+      );
       try {
         const profile = await profileRes.json();
         setBackendProfile(profile);
@@ -110,10 +135,6 @@ export const useApi: () => UseApi = () => {
 
     loadData();
   }, [dynamicContext.authToken]);
-
-  // const submitBid = (bidInfo: BidInfo) => {
-  //     bidInfo
-  // }
 
   const fetchBalance = async () => {
     if (!dynamicContext.walletConnector) return;
@@ -129,13 +150,48 @@ export const useApi: () => UseApi = () => {
     return result;
   };
 
-  const [balance, setBalance] = useState<BigInt | undefined>(undefined);
+  const [balance, setBalance] = useState<bigint | undefined>(undefined);
 
-  // useEffect(() => {
-  //   fetchBalance().then((balance) => {
-  //     setBalance(balance as bigint);
-  //   });
-  // }, [dynamicContext]);
+  useEffect(() => {
+    fetchBalance().then((balance) => {
+      setBalance(balance as bigint);
+    });
+  }, [dynamicContext]);
+
+  const submitBid = async (bidInfo: BidInfo) => {
+    if (!dynamicContext.walletConnector) return;
+    const publicClient: PublicClient =
+      (await dynamicContext.walletConnector.getPublicClient()) as PublicClient;
+    const walletClient: WalletClient =
+      (await dynamicContext.walletConnector.getWalletClient(
+        chain_ID.toString()
+      )) as WalletClient;
+    const account = await dynamicContext.walletConnector.getAddress();
+
+    // Request approval for amount
+    const { request } = await publicClient.simulateContract({
+      // @ts-ignore
+      account,
+      address: onlyContract_ADDRESS,
+      abi: onlyContract_ABI,
+      functionName: "approve",
+      args: [marketplaceContract_ADDRESS, bidInfo.budget],
+    });
+    console.log(request);
+    console.log(await walletClient.writeContract(request));
+
+    // Create offer with amount
+    const { request: createOfferReq } = await publicClient.simulateContract({
+      // @ts-ignore
+      account,
+      address: marketplaceContract_ADDRESS,
+      abi: marketplaceContract_ABI,
+      functionName: "createOffer",
+      args: [bidInfo.influencerWallet, bidInfo.impressions, bidInfo.budget],
+    });
+    console.log(createOfferReq);
+    console.log(await walletClient.writeContract(createOfferReq));
+  };
 
   return {
     user: dynamicContext.user,
@@ -146,5 +202,6 @@ export const useApi: () => UseApi = () => {
     updateProfile,
     fetchBalance,
     balance,
+    submitBid,
   };
 };
