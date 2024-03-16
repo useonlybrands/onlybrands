@@ -1,138 +1,150 @@
-import {useDynamicContext, UserProfile} from "@dynamic-labs/sdk-react-core";
-import {useEffect, useState} from "react";
-import {UseDynamicContext} from "@dynamic-labs/sdk-react-core/src/lib/context/DynamicContext/useDynamicContext";
-import {onlyContract_ABI, onlyContract_ADDRESS} from "@/constants/contracts";
+import { useDynamicContext, UserProfile } from "@dynamic-labs/sdk-react-core";
+import { useEffect, useState } from "react";
+import { UseDynamicContext } from "@dynamic-labs/sdk-react-core/src/lib/context/DynamicContext/useDynamicContext";
+import { onlyContract_ABI, onlyContract_ADDRESS } from "@/constants/contracts";
+import { ROLES } from "@/constants/register";
 
-export interface BrandInfo {
-
-}
+export interface BrandInfo {}
 export interface InfluencerInfo {
-
+  username: any;
+  name: string;
+  email: string;
+  wallet: string;
+  platform: any;
+  industry: any;
+  followerCount?: number;
+  sex: any;
+  age: number;
+  image: any;
 }
+
 export interface BackendProfile {
-    username: string;
-    profileType: "brand"|"influencer";
-    brandInfo?: BrandInfo;
-    influencerInfo?: InfluencerInfo;
+  profileType: "brand" | "influencer";
+  brandInfo?: BrandInfo;
+  influencerInfo?: InfluencerInfo;
 }
 
 export interface BidInfo {
-    brandUsername: string;
-    brandWallet: string;
-    influencerUsername: string;
-    influencerWallet: string;
-    title: string;
-    description: string;
-    status: string;
-    // ... other fields
-    budget: number;
+  brandUsername: string;
+  brandWallet: string;
+  influencerUsername: string;
+  influencerWallet: string;
+  title: string;
+  description: string;
+  status: string;
+  // ... other fields
+  budget: number;
 }
 
 export interface UseApi {
-    user: UserProfile,
-    dynamicContext: UseDynamicContext,
-    signMessage: (message: string) => any,
-    profile?: BackendProfile,
-    updateProfile: (BackendProfile) => Promise<Response>,
-    submitBid: (BidInfo) => Promise<void>,
-    fetchBalance: () => Promise<any>,
-    balance?: bigint
+  // TODO: check in database if user is registered (isRegistered endpoint)
+  user: UserProfile;
+  dynamicContext: UseDynamicContext;
+  signMessage: (message: string) => any;
+  profile?: BackendProfile;
+  updateProfile: (BackendProfile) => Promise<Response>;
+  submitBid: (BidInfo) => Promise<void>;
+  fetchBalance: () => Promise<any>;
+  balance?: bigint;
 }
 export const useApi: () => UseApi = () => {
-    const dynamicContext = useDynamicContext();
+  const dynamicContext = useDynamicContext();
 
-    const signMessage = async (msg) => {
-        if (!dynamicContext.primaryWallet) return;
+  const signMessage = async (msg) => {
+    if (!dynamicContext.primaryWallet) return;
 
-        const signer = await dynamicContext.primaryWallet.connector.getSigner();
+    const signer = await dynamicContext.primaryWallet.connector.getSigner();
 
-        if (!signer) return;
+    if (!signer) return;
 
-        // @ts-ignore
-        const signature = await signer.signMessage({
-            account: dynamicContext.primaryWallet.address,
-            message: msg
+    // @ts-ignore
+    const signature = await signer.signMessage({
+      account: dynamicContext.primaryWallet.address,
+      message: msg,
+    });
+
+    console.log("signature", signature);
+    return signature;
+  };
+
+  const [backendProfile, setBackendProfile] = useState<BackendProfile | null>(
+    null
+  );
+
+  const updateProfile = (profile: BackendProfile) => {
+    console.log("profile:", profile);
+    switch (profile.profileType) {
+      case ROLES.BRAND:
+        return fetch("/create_brand", {
+          headers: {
+            Authorization: `Bearer ${dynamicContext.authToken}`,
+          },
+          method: "POST",
+          body: JSON.stringify(profile.brandInfo),
         });
+      case ROLES.INFLUENCER:
+        return fetch("/create_influencer", {
+          headers: {
+            Authorization: `Bearer ${dynamicContext.authToken}`,
+          },
+          method: "POST",
+          body: JSON.stringify(profile.influencerInfo),
+        });
+    }
+  };
 
-        console.log('signature', signature);
-        return signature;
+  useEffect(() => {
+    const loadData = async () => {
+      const profileRes = await fetch("/get_profile", {
+        headers: {
+          Authorization: `Bearer ${dynamicContext.authToken}`,
+        },
+      });
+      try {
+        const profile = await profileRes.json();
+        setBackendProfile(profile);
+      } catch (e) {
+        console.error("Couldn't load backend profile", e);
+      }
     };
 
-    const [backendProfile, setBackendProfile] = useState<BackendProfile|null>(null);
+    loadData();
+  }, [dynamicContext.authToken]);
 
-    const updateProfile = (profile: BackendProfile) => {
-        switch (profile.profileType) {
-            case "brand":
-                return fetch("/create_brand", {
-                    headers: {
-                        Authorization: `Bearer ${dynamicContext.authToken}`,
-                    },
-                    method: "POST",
-                    body: JSON.stringify(profile.brandInfo)
-                });
-            case "influencer":
-                return fetch("/create_influencer", {
-                    headers: {
-                        Authorization: `Bearer ${dynamicContext.authToken}`,
-                    },
-                    method: "POST",
-                    body: JSON.stringify(profile.influencerInfo)
-                });
-        }
-    }
+  // const submitBid = (bidInfo: BidInfo) => {
+  //     bidInfo
+  // }
 
-    useEffect(() => {
-        const loadData = async () => {
-            const profileRes = await fetch("/get_profile", {
-                headers: {
-                    Authorization: `Bearer ${dynamicContext.authToken}`,
-                }
-            })
-            try {
-                const profile = await profileRes.json();
-                setBackendProfile(profile);
-            } catch (e) {
-                console.error("Couldn't load backend profile", e)
-            }
-        };
+  const fetchBalance = async () => {
+    if (!dynamicContext.walletConnector) return;
+    const publicClient = await dynamicContext.walletConnector.getPublicClient();
 
-        loadData();
-    }, [dynamicContext.authToken])
+    const result = await publicClient.readContract({
+      address: onlyContract_ADDRESS,
+      abi: onlyContract_ABI,
+      functionName: "balanceOf",
+      args: [await dynamicContext.walletConnector.getAddress()],
+    });
+    console.log(result);
+    return result;
+  };
 
-    // const submitBid = (bidInfo: BidInfo) => {
-    //     bidInfo
-    // }
+  const [balance, setBalance] = useState<BigInt | undefined>(undefined);
 
-    const fetchBalance = async () => {
-        if (!dynamicContext.walletConnector) return;
-        const publicClient = await dynamicContext.walletConnector.getPublicClient();
+  // useEffect(() => {
+  //   fetchBalance().then((balance) => {
+  //     setBalance(balance as bigint);
+  //   });
+  // }, [dynamicContext]);
 
-        const result = await publicClient.readContract({
-            address: onlyContract_ADDRESS,
-            abi: onlyContract_ABI,
-            functionName: "balanceOf",
-            args: [await dynamicContext.walletConnector.getAddress()]
-        })
-        console.log(result);
-        return result
-    }
-
-    const [balance, setBalance] = useState<BigInt|undefined>(undefined);
-
-    useEffect(() => {
-        fetchBalance().then((balance) => {
-            setBalance(balance as bigint);
-        })
-    }, [dynamicContext]);
-
-    return {
-        user: dynamicContext.user,
-        dynamicContext,
-        signMessage,
-        // connectionType: "dynamic",
-        profile: backendProfile,
-        updateProfile,
-        fetchBalance,
-        balance
-    };
-}
+  return {
+    user: dynamicContext.user,
+    dynamicContext,
+    signMessage,
+    // connectionType: "dynamic",
+    profile: backendProfile,
+    updateProfile,
+    fetchBalance,
+    balance,
+  };
+};

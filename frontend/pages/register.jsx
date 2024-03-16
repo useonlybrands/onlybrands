@@ -11,29 +11,29 @@ import {
   ROLE_OPTIONS,
   ROLES,
   SCHEMAS,
-  STEPS
+  STEPS,
 } from "@/constants/register";
 import useCountries from "@/hooks/useCountries";
-// import ClientApi from '@/utils/initDatabase';
-const ClientApi = {};
 import { Formik } from "formik";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import useModal from "@/hooks/useModal";
+import { useApi } from "@/hooks/useApi";
 import { ArrowPathIcon, CheckIcon } from "@heroicons/react/24/outline";
-
 
 const Register = () => {
   const router = useRouter();
   const allCountries = useCountries();
+  const { Modal, isOpen, openModal, closeModal } = useModal();
+  const { user, updateProfile } = useApi();
+
   const [formData, setFormData] = useState({});
   const [step, setStep] = useState(STEPS.SELECT_ROLE);
   const [role, setRole] = useState(ROLES.INFLUENCER);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [initialValues, setInitialValues] = useState(INITIAL_VALUES);
   const [typesSchemas] = useState(SCHEMAS);
-  const { Modal, isOpen, openModal, closeModal } = useModal();
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Returns an array of options for a given field name.
   const getFieldOptions = (fieldName) => {
@@ -48,9 +48,6 @@ const Register = () => {
     const fieldOptions = {
       platform: INFLUENCER_FIELDS.find((field) => field.name === PLATFORM_FIELD)
         .options,
-      username: INFLUENCER_FIELDS.find(
-        (field) => field.name === USERNAME_FIELD
-      ).options,
       size: BRAND_FIELDS.find((field) => field.name === SIZE_FIELD).options,
       industry: BRAND_FIELDS.find((field) => field.name === INDUSTRY_FIELD)
         .options,
@@ -94,97 +91,72 @@ const Register = () => {
     return false;
   };
 
-  // Uploads an avatar or logo image to the server and returns its URL
-  const uploadAvatarHandler = async (values, role) => {
+  const uploadImageToImgBB = async (formData) => {
+    const data = new FormData();
+    data.append("image", formData.avatar_url);
+
     try {
-      // Helper function to get the email prefix for the filename
-      const getEmailPrefix = (email) => {
-        return email.split("@")[0].toLowerCase().replace(/\s/g, "-");
-      };
+      const response = await fetch(
+        `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`,
+        {
+          method: "POST",
+          body: data,
+        }
+      );
 
-      // Helper function to generate the filename based on values and role
-      const getFilename = (values, role) => {
-        const prefix = getEmailPrefix(values.email);
-        const type = role === ROLES.INFLUENCER ? "avatar" : "logo";
-        return `${prefix}-${type}`;
-      };
-
-      // Generate the filename and the slug based on the role
-      const filename = getFilename(values, role);
-      const slug = role === ROLES.INFLUENCER ? "avatars" : "brand-logos";
-
-      // Call the API to upload the file and get its URL
-      const { data: avatarURL, error } = await ClientApi.uploadLogo({
-        slug,
-        file: values.avatar_url,
-        filename,
-      });
-
-      // Handle any errors that may have occurred during the API call
-      if (error) {
-        const errorMessage = error?.message || "Server error occurred";
-        toast.error(errorMessage);
-        throw new Error(errorMessage);
+      if (response.ok) {
+        const { data } = await response.json();
+        return data.url;
+      } else {
+        const { error } = await response.json();
+        throw new Error(error.message);
       }
-
-      // Get the path from the URL and return the full URL
-      const path = avatarURL?.path || avatarURL?.Key || "";
-      return `/${slug}/${path}`;
     } catch (error) {
-      // Handle any errors that may have occurred during the upload process
-      const errorMessage = error?.message || "Server error occurred";
-      toast.error(errorMessage);
-      throw new Error(`Error uploading avatar: ${errorMessage}`);
+      console.error("Error uploading image to ImgBB:", error.message);
+      throw error;
     }
   };
 
-  // Creates a user with the given values and avatarURL
-  const createUserHandler = async (values, avatarURL) => {
+  const createInfluencerOrBrandHandler = async (values, avatarURL) => {
+    const profile = {
+      profileType: values.role,
+      influencerInfo: {
+        username: user.username,
+        name: values.name,
+        email: values.email,
+        wallet: user.wallet,
+        platform: values.platform,
+        industry: values.industry,
+        sex: values.gender,
+        age: values.age,
+        image: avatarURL,
+      },
+    };
+
     try {
-      // Create an object with the user's role, avatarURL, and saved jobs
-      const registerData = {
-        role: values.role,
-        avatar_url: avatarURL,
-        savedJobs: [],
-      };
+      const res = await updateProfile(profile);
+      console.log(res, "resssss");
 
-      // If the user is a influencer, add their name, phone, and platform to registerData
-      if (values.role === ROLES.INFLUENCER) {
-        registerData.name = values.name;
-        // registerData.platform = values.platform
-        registerData.platform = values.platform[0]?.id || values.platform[0];
-      }
-
-      // If the user is a brand, add their brand information to registerData
-      if (values.role === ROLES.BRAND) {
-        registerData.brand = {
-          name: values.brandName,
-          description: values.brandDescription,
-          website: values.brandWebsite,
-          industry: values.industry[0]?.id || values.industry[0],
-          size: values.size[0]?.id || values.size[0],
-          location: values.location[0]?.id || values.location[0],
-        };
-      }
-
-      // Return the response data and error (if any)
       return { data, error };
     } catch (error) {
       const errorMessage = error?.message || "Server error occurred";
       toast.error(errorMessage);
-      // Re-throw the error to propagate it up the call stack
       throw error;
     }
   };
 
   const onRegisterHandler = async () => {
     setIsSubmitting(true);
+    console.log("formData: ", formData);
 
     try {
       const avatarURL = formData.avatar_url
-        ? await uploadAvatarHandler(formData)
+        ? await uploadImageToImgBB(formData)
         : "";
-      const { error } = await createUserHandler(formData, avatarURL);
+      const { error } = await createInfluencerOrBrandHandler(
+        formData,
+        avatarURL
+      );
 
       if (error) {
         const errorMessage = error?.message || "Server error occurred";
@@ -195,6 +167,7 @@ const Register = () => {
       toast.success("Account created successfully");
       router.push("/");
     } catch (error) {
+      console.error(error);
       const errorMessage = error?.message || "Server error occurred";
       toast.error(errorMessage);
     } finally {
