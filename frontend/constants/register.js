@@ -4,6 +4,7 @@ import {
   passwordValidation,
   phoneValidation,
   requiredString,
+  requiredNumber,
   stringOrArray,
   url,
 } from "./helpers";
@@ -122,9 +123,16 @@ export const INFLUENCER_FIELDS = [
     type: "text",
   },
   {
-    name: "username",
-    label: "Username",
-    placeholder: "Enter a unique username",
+    name: "gender",
+    label: "Gender",
+    placeholder: "What is your gender?",
+    required: true,
+    type: "text",
+  },
+  {
+    name: "age",
+    label: "Age",
+    placeholder: "Enter your age",
     required: true,
     type: "text",
   },
@@ -246,8 +254,8 @@ export const BRAND_FIELDS = [
 
 export const InfluencerSchemaValidation = Yup.object().shape({
   name: requiredString("name"),
-  username: requiredString("username"),
   email: emailValidation("email address"),
+  age: requiredNumber("age"),
   platform: stringOrArray("platform"),
   industry: stringOrArray("industry"),
 });

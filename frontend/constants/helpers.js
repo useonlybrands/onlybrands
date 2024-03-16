@@ -2,6 +2,8 @@ import * as Yup from 'yup';
 
 const requiredString = (fieldName) => Yup.string().required(`The ${fieldName} is required`);
 
+const requiredNumber = (fieldName) => Yup.number().required(`The ${fieldName} is required`);
+
 const url = (fieldName) => Yup.string().url(`The ${fieldName} URL is not valid`);
 
 const stringOrArray = (fieldName) =>
@@ -37,6 +39,7 @@ const phoneValidation = (fieldName) =>
 export {
   Yup,
   requiredString,
+  requiredNumber,
   stringOrArray,
   url,
   emailValidation,
