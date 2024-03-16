@@ -1,33 +1,34 @@
-import AutoComplete from '@/components/Form/AutoComplete';
-import TextField from '@/components/Form/TextField';
-import TextareaField from '@/components/Form/Textarea';
-import AvatarUpload from '@/components/UI/AvatarUpload';
-import Button from '@/components/UI/Button';
+import AutoComplete from "@/components/Form/AutoComplete";
+import TextField from "@/components/Form/TextField";
+import TextareaField from "@/components/Form/Textarea";
+import AvatarUpload from "@/components/UI/AvatarUpload";
+import Button from "@/components/UI/Button";
 import {
-  CANDIDATE_FIELDS,
-  COMPANY_FIELDS,
+  INFLUENCER_FIELDS,
+  BRAND_FIELDS,
   CREDENTIALS_FIELDS,
   INITIAL_VALUES,
   ROLE_OPTIONS,
   ROLES,
   SCHEMAS,
   STEPS,
-} from '@/constants/register';
-import useCountries from '@/hooks/useCountries';
-import ClientApi from '@/utils/initDatabase';
-import { Formik } from 'formik';
-import { useRouter } from 'next/router';
-import { useEffect, useMemo, useState } from 'react';
-import { toast } from 'react-toastify';
-import useModal from '@/hooks/useModal';
-import { ArrowPathIcon, CheckIcon } from '@heroicons/react/24/outline';
+} from "@/constants/register";
+import useCountries from "@/hooks/useCountries";
+// import ClientApi from '@/utils/initDatabase';
+const ClientApi = {};
+import { Formik } from "formik";
+import { useRouter } from "next/router";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
+import useModal from "@/hooks/useModal";
+import { ArrowPathIcon, CheckIcon } from "@heroicons/react/24/outline";
 
 const Register = () => {
   const router = useRouter();
   const allCountries = useCountries();
   const [formData, setFormData] = useState({});
   const [step, setStep] = useState(STEPS.SELECT_ROLE);
-  const [role, setRole] = useState(ROLES.CANDIDATE);
+  const [role, setRole] = useState(ROLES.INFLUENCER);
   const [initialValues, setInitialValues] = useState(INITIAL_VALUES);
   const [typesSchemas] = useState(SCHEMAS);
   const { Modal, isOpen, openModal, closeModal } = useModal();
@@ -36,15 +37,22 @@ const Register = () => {
   // Returns an array of options for a given field name.
   const getFieldOptions = (fieldName) => {
     // Field names for which options are available
-    const CAREER_FIELD = 'career';
-    const SIZE_FIELD = 'size';
-    const INDUSTRY_FIELD = 'industry';
+    const PLATFORM_FIELD = "platform";
+    const USERNAME_FIELD = "username";
+
+    const SIZE_FIELD = "size";
+    const INDUSTRY_FIELD = "industry";
 
     // Object that maps field names to their available options.
     const fieldOptions = {
-      career: CANDIDATE_FIELDS.find((field) => field.name === CAREER_FIELD).options,
-      size: COMPANY_FIELDS.find((field) => field.name === SIZE_FIELD).options,
-      industry: COMPANY_FIELDS.find((field) => field.name === INDUSTRY_FIELD).options,
+      platform: INFLUENCER_FIELDS.find((field) => field.name === PLATFORM_FIELD)
+        .options,
+      username: INFLUENCER_FIELDS.find(
+        (field) => field.name === USERNAME_FIELD
+      ).options,
+      size: BRAND_FIELDS.find((field) => field.name === SIZE_FIELD).options,
+      industry: BRAND_FIELDS.find((field) => field.name === INDUSTRY_FIELD)
+        .options,
       location: allCountries,
     };
 
@@ -52,12 +60,12 @@ const Register = () => {
     return fieldOptions[fieldName] || [];
   };
 
-  // Returns an array of field definitions for a given role (either candidate or company).
+  // Returns an array of field definitions for a given role (either influencer or brand).
   const setFieldsByRole = (role) => {
     // Object that maps roles to their corresponding field definitions.
     const fields = {
-      candidate: CANDIDATE_FIELDS,
-      company: COMPANY_FIELDS,
+      influencer: INFLUENCER_FIELDS,
+      brand: BRAND_FIELDS,
     };
 
     // Return the field definitions for the specified role, or an empty array if the role is not found.
@@ -67,20 +75,15 @@ const Register = () => {
   // Checks if the form is valid based on the current step and role
   const isFormValid = (values, step) => {
     if (step === STEPS.CREDENTIALS) {
-      return (
-        values.email &&
-        values.password &&
-        values.confirmPassword &&
-        values.password === values.confirmPassword
-      );
+      return values.email;
     } else if (step === STEPS.REGISTER_INFO) {
-      if (role === ROLES.CANDIDATE) {
-        return values.name && values.phone && values.career.length;
-      } else if (role === ROLES.COMPANY) {
+      if (role === ROLES.INFLUENCER) {
+        return values.name && values.platform.length;
+      } else if (role === ROLES.BRAND) {
         return (
-          values.companyName &&
+          values.brandName &&
           values.phone &&
-          values.companyDescription &&
+          values.brandDescription &&
           values.industry.length &&
           values.size.length &&
           values.location.length
@@ -95,19 +98,19 @@ const Register = () => {
     try {
       // Helper function to get the email prefix for the filename
       const getEmailPrefix = (email) => {
-        return email.split('@')[0].toLowerCase().replace(/\s/g, '-');
+        return email.split("@")[0].toLowerCase().replace(/\s/g, "-");
       };
 
       // Helper function to generate the filename based on values and role
       const getFilename = (values, role) => {
         const prefix = getEmailPrefix(values.email);
-        const type = role === ROLES.CANDIDATE ? 'avatar' : 'logo';
+        const type = role === ROLES.INFLUENCER ? "avatar" : "logo";
         return `${prefix}-${type}`;
       };
 
       // Generate the filename and the slug based on the role
       const filename = getFilename(values, role);
-      const slug = role === ROLES.CANDIDATE ? 'avatars' : 'company-logos';
+      const slug = role === ROLES.INFLUENCER ? "avatars" : "brand-logos";
 
       // Call the API to upload the file and get its URL
       const { data: avatarURL, error } = await ClientApi.uploadLogo({
@@ -118,17 +121,17 @@ const Register = () => {
 
       // Handle any errors that may have occurred during the API call
       if (error) {
-        const errorMessage = error?.message || 'Server error occurred';
+        const errorMessage = error?.message || "Server error occurred";
         toast.error(errorMessage);
         throw new Error(errorMessage);
       }
 
       // Get the path from the URL and return the full URL
-      const path = avatarURL?.path || avatarURL?.Key || '';
+      const path = avatarURL?.path || avatarURL?.Key || "";
       return `/${slug}/${path}`;
     } catch (error) {
       // Handle any errors that may have occurred during the upload process
-      const errorMessage = error?.message || 'Server error occurred';
+      const errorMessage = error?.message || "Server error occurred";
       toast.error(errorMessage);
       throw new Error(`Error uploading avatar: ${errorMessage}`);
     }
@@ -144,37 +147,29 @@ const Register = () => {
         savedJobs: [],
       };
 
-      // If the user is a candidate, add their name, phone, and career to registerData
-      if (values.role === ROLES.CANDIDATE) {
+      // If the user is a influencer, add their name, phone, and platform to registerData
+      if (values.role === ROLES.INFLUENCER) {
         registerData.name = values.name;
-        registerData.phone = values.phone;
-        registerData.career = values.career[0]?.id || values.career[0];
+        // registerData.platform = values.platform
+        registerData.platform = values.platform[0]?.id || values.platform[0];
       }
 
-      // If the user is a company, add their company information to registerData
-      if (values.role === ROLES.COMPANY) {
-        registerData.company = {
-          name: values.companyName,
-          phone: values.phone,
-          description: values.companyDescription,
-          website: values.companyWebsite,
+      // If the user is a brand, add their brand information to registerData
+      if (values.role === ROLES.BRAND) {
+        registerData.brand = {
+          name: values.brandName,
+          description: values.brandDescription,
+          website: values.brandWebsite,
           industry: values.industry[0]?.id || values.industry[0],
           size: values.size[0]?.id || values.size[0],
           location: values.location[0]?.id || values.location[0],
         };
       }
 
-      // Call the signUp API with the user's email, password, and registerData
-      const { data, error } = await ClientApi.Auth.signUp({
-        email: values.email,
-        password: values.password,
-        data: registerData,
-      });
-
       // Return the response data and error (if any)
       return { data, error };
     } catch (error) {
-      const errorMessage = error?.message || 'Server error occurred';
+      const errorMessage = error?.message || "Server error occurred";
       toast.error(errorMessage);
       // Re-throw the error to propagate it up the call stack
       throw error;
@@ -185,19 +180,21 @@ const Register = () => {
     setIsSubmitting(true);
 
     try {
-      const avatarURL = formData.avatar_url ? await uploadAvatarHandler(formData) : '';
+      const avatarURL = formData.avatar_url
+        ? await uploadAvatarHandler(formData)
+        : "";
       const { error } = await createUserHandler(formData, avatarURL);
 
       if (error) {
-        const errorMessage = error?.message || 'Server error occurred';
+        const errorMessage = error?.message || "Server error occurred";
         throw new Error(errorMessage);
       }
 
       closeModal();
-      toast.success('Account created successfully');
-      router.push('/');
+      toast.success("Account created successfully");
+      router.push("/");
     } catch (error) {
-      const errorMessage = error?.message || 'Server error occurred';
+      const errorMessage = error?.message || "Server error occurred";
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -217,25 +214,44 @@ const Register = () => {
     return typesSchemas[role];
   }, [role]);
 
+  console.log({
+    role: role,
+    currentStep: step,
+  });
+
   return (
     <Formik
       enableReinitialize
       initialValues={initialValues}
       validationSchema={validationSchemaSelected}
     >
-      {({ values, handleChange, handleBlur, setFieldValue, errors, touched, setFieldTouched }) => (
+      {({
+        values,
+        handleChange,
+        handleBlur,
+        setFieldValue,
+        errors,
+        touched,
+        setFieldTouched,
+      }) => (
         <>
           <article
             className={`container flex flex-col items-center pt-8 w-full min-h-[calc(100vh-4rem)] mx-auto space-y-6 bg-gray-100 min-w-screen
-          ${step === STEPS.REGISTER_INFO && role === ROLES.COMPANY ? 'max-w-2xl' : 'max-w-sm'}
+          ${
+            step === STEPS.REGISTER_INFO && role === ROLES.BRAND
+              ? "max-w-2xl"
+              : "max-w-sm"
+          }
         `}
           >
             <header>
               <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl md:text-3xl ">
-                {step === STEPS.SELECT_ROLE && 'Select your role'}
-                {step === STEPS.CREDENTIALS && 'Account Registration'}
+                {step === STEPS.SELECT_ROLE && "Select your role"}
+                {step === STEPS.CREDENTIALS && "Account Registration"}
                 {step === STEPS.REGISTER_INFO &&
-                  `${values.role === ROLES.CANDIDATE ? 'Candidate' : 'Company'} Registration`}
+                  `${
+                    values.role === ROLES.INFLUENCER ? "Influencer" : "Brand"
+                  } Registration`}
               </h1>
             </header>
 
@@ -256,8 +272,8 @@ const Register = () => {
                           aria-pressed={option.id === role}
                           className={`flex items-center justify-center w-full p-2 text-lg font-semibold select-none text-white rounded-md cursor-pointer h-32 ${
                             option.id === role
-                              ? 'bg-primary-700 hover:bg-secondary-800 '
-                              : 'bg-gray-400 hover:bg-secondary-700'
+                              ? "bg-primary-700 hover:bg-secondary-800 "
+                              : "bg-gray-400 hover:bg-secondary-700"
                           }`}
                           htmlFor={option.id}
                           role="button"
@@ -271,7 +287,7 @@ const Register = () => {
                             name="role"
                             onChange={() => {
                               setRole(option.id);
-                              setFieldValue('role', option.id);
+                              setFieldValue("role", option.id);
                             }}
                             role="radio"
                             type="checkbox"
@@ -289,11 +305,11 @@ const Register = () => {
                     onClick={(event) => {
                       event.preventDefault();
                       // validate form
-                      setStep(STEPS.CREDENTIALS);
+                      setStep(STEPS.REGISTER_INFO);
                     }}
                     rounded="md"
                     size="lg"
-                    styles={'w-full h-[50px] mt-8'}
+                    styles={"w-full h-[50px] mt-8"}
                     title="Continue"
                     type="button"
                   >
@@ -308,10 +324,12 @@ const Register = () => {
                     <ul className="flex flex-col w-full">
                       {CREDENTIALS_FIELDS.map((field) => (
                         <li className="block w-full" key={field.name}>
-                          {field.type === 'text' && (
+                          {field.type === "email" && (
                             <TextField
                               error={
-                                errors[field.name] && touched[field.name] && errors[field.name]
+                                errors[field.name] &&
+                                touched[field.name] &&
+                                errors[field.name]
                               }
                               label={field.label}
                               name={field.name}
@@ -324,63 +342,13 @@ const Register = () => {
                               value={values[field.name]}
                             />
                           )}
-                          {field.type === 'select' && getFieldOptions(field.name)?.length > 0 && (
-                            <AutoComplete
-                              error={
-                                errors[field.name] && touched[field.name] && errors[field.name]
-                              }
-                              multiple={field.multiple}
-                              onChange={(selected) => setFieldValue(field.name, selected)}
-                              options={getFieldOptions(field.name)}
-                              optionsSelected={values[field.name] || []}
-                              placeholder={field.placeholder}
-                              required={field.required}
-                              setTouched={(name) => setFieldTouched(name)}
-                              title={field.label}
-                              touched={touched[field.name]}
-                            />
-                          )}
                         </li>
                       ))}
                     </ul>
-
-                    <div className="flex flex-col w-full">
-                      <TextField
-                        error={errors.password && touched.password && errors.password}
-                        label="Password"
-                        name="password"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="Enter your password"
-                        required
-                        title="Password"
-                        type="password"
-                        value={values.password}
-                      />
-                    </div>
-
-                    <div className="flex flex-col w-full">
-                      <TextField
-                        error={
-                          errors.confirmPassword &&
-                          touched.confirmPassword &&
-                          errors.confirmPassword
-                        }
-                        label="Confirm Password"
-                        name="confirmPassword"
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        placeholder="Confirm your password"
-                        required
-                        title="Confirm Password"
-                        type="password"
-                        value={values.confirmPassword}
-                      />
-                    </div>
                   </section>
 
                   <Button
-                    color={isFormValid(values, step) ? 'primary' : 'disabled'}
+                    color={isFormValid(values, step) ? "primary" : "disabled"}
                     disabled={!isFormValid(values, step)}
                     displayType="flex"
                     fullWidth
@@ -392,11 +360,17 @@ const Register = () => {
                     }}
                     rounded="md"
                     size="lg"
-                    styles={'w-full h-[50px] mt-8'}
+                    styles={"w-full h-[50px] mt-8"}
                     title="Continue"
                     type="button"
                   >
-                    <div className={isFormValid(values, step) ? 'text-white' : 'text-gray-400'}>
+                    <div
+                      className={
+                        isFormValid(values, step)
+                          ? "text-white"
+                          : "text-gray-400"
+                      }
+                    >
                       Continue
                     </div>
                   </Button>
@@ -421,22 +395,28 @@ const Register = () => {
                       id="avatar_url"
                       name="avatar_url"
                       onChange={(uploadedAvatar) => {
-                        setFieldValue('avatar_url', uploadedAvatar);
+                        setFieldValue("avatar_url", uploadedAvatar);
                       }}
-                      placeholder={`Upload ${role === 'candidate' ? 'avatar' : 'logo'}`}
+                      placeholder={`Upload ${
+                        role === "influencer" ? "avatar" : "logo"
+                      }`}
                     />
 
                     <div className="w-full h-px mt-6 mb-4 bg-gray-300" />
 
                     <section
-                      className={`grid w-full gap-4 grid-cols-${role === 'candidate' ? 1 : 2}`}
+                      className={`grid w-full gap-4 grid-cols-${
+                        role === "influencer" ? 1 : 2
+                      }`}
                     >
                       {setFieldsByRole(role).map((field) => (
                         <div className="w-full" key={field.name}>
-                          {field.type === 'text' && (
+                          {field.type === "text" && (
                             <TextField
                               error={
-                                errors[field.name] && touched[field.name] && errors[field.name]
+                                errors[field.name] &&
+                                touched[field.name] &&
+                                errors[field.name]
                               }
                               label={field.label}
                               name={field.name}
@@ -450,49 +430,73 @@ const Register = () => {
                             />
                           )}
 
-                          {field.type === 'select' && getFieldOptions(field.name)?.length > 0 && (
-                            <AutoComplete
+                          {field.type === "email" && (
+                            <TextField
                               error={
-                                errors[field.name] && touched[field.name] && errors[field.name]
+                                errors[field.name] &&
+                                touched[field.name] &&
+                                errors[field.name]
                               }
+                              label={field.label}
                               name={field.name}
-                              onChange={(selected) => setFieldValue(field.name, selected)}
-                              options={getFieldOptions(field.name)}
-                              optionsSelected={values[field.name] || []}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
                               placeholder={field.placeholder}
                               required={field.required}
-                              setTouched={(name) => setFieldTouched(name)}
                               title={field.label}
+                              type="text"
+                              value={values[field.name]}
                             />
                           )}
+
+                          {field.type === "select" &&
+                            getFieldOptions(field.name)?.length > 0 && (
+                              <AutoComplete
+                                error={
+                                  errors[field.name] &&
+                                  touched[field.name] &&
+                                  errors[field.name]
+                                }
+                                name={field.name}
+                                onChange={(selected) =>
+                                  setFieldValue(field.name, selected)
+                                }
+                                options={getFieldOptions(field.name)}
+                                optionsSelected={values[field.name] || []}
+                                placeholder={field.placeholder}
+                                required={field.required}
+                                setTouched={(name) => setFieldTouched(name)}
+                                title={field.label}
+                              />
+                            )}
                         </div>
                       ))}
                     </section>
 
-                    {role === ROLES.COMPANY && (
+                    {role === ROLES.BRAND && (
                       <section className="flex flex-col w-full mt-4">
                         <TextareaField
                           error={
-                            errors.companyDescription &&
-                            touched.companyDescription &&
-                            errors.companyDescription
+                            errors.brandDescription &&
+                            touched.brandDescription &&
+                            errors.brandDescription
                           }
-                          label={'Description'}
-                          name={'companyDescription'}
+                          label={"Description"}
+                          name={"brandDescription"}
                           onBlur={handleBlur}
                           onChange={handleChange}
-                          placeholder={'Enter your company description'}
+                          placeholder={"Enter your brand description"}
                           required
                           rows={5}
-                          title={'Company Description'}
-                          value={values.companyDescription}
+                          title={"brand Description"}
+                          value={values.brandDescription}
                         />
                       </section>
                     )}
                   </section>
 
                   <Button
-                    color={isFormValid(values, step) ? 'primary' : 'disabled'}
+                    color={isFormValid(values, step) ? "primary" : "disabled"}
                     disabled={!isFormValid(values, step)}
                     displayType="block"
                     fullWidth
@@ -506,11 +510,17 @@ const Register = () => {
                     }}
                     rounded="md"
                     size="lg"
-                    styles={'w-full h-[50px] mt-8'}
+                    styles={"w-full h-[50px] mt-8"}
                     title="Register"
                     type="button"
                   >
-                    <div className={isFormValid(values, step) ? 'text-white' : 'text-gray-400'}>
+                    <div
+                      className={
+                        isFormValid(values, step)
+                          ? "text-white"
+                          : "text-gray-400"
+                      }
+                    >
                       Create account
                     </div>
                   </Button>
@@ -519,7 +529,7 @@ const Register = () => {
                     <Button
                       className="text-sm font-light text-gray-800 cursor-pointer hover:text-secondary-700"
                       color="text"
-                      onClick={() => setStep(STEPS.CREDENTIALS)}
+                      onClick={() => setStep(STEPS.SELECT_ROLE)}
                       type="button"
                     >
                       Return to previous step
@@ -529,7 +539,7 @@ const Register = () => {
               )}
             </form>
 
-            <footer className="flex flex-col gap-2 mt-4 text-center">
+            {/* <footer className="flex flex-col gap-2 mt-4 text-center">
               <section className="text-base font-light text-gray-800">
                 Already have an account?{' '}
                 <button
@@ -539,8 +549,8 @@ const Register = () => {
                 >
                   Login
                 </button>
-              </section>
-              {/* 
+              </section> */}
+            {/* 
             <section className="text-base font-light text-gray-800">
               Forgot your password?{' '}
               <button
@@ -551,7 +561,7 @@ const Register = () => {
                 Reset Password
               </button>
             </section> */}
-            </footer>
+            {/* </footer> */}
           </article>
 
           {/* Confirmation Modal */}
@@ -582,7 +592,7 @@ const Register = () => {
                   }}
                   rounded="md"
                   size="lg"
-                  styles={'w-full h-[50px]'}
+                  styles={"w-full h-[50px]"}
                   title="Cancel"
                   type="button"
                 >
@@ -590,7 +600,7 @@ const Register = () => {
                 </Button>
 
                 <Button
-                  color={isSubmitting ? 'disabled' : 'primary'}
+                  color={isSubmitting ? "disabled" : "primary"}
                   disabled={isSubmitting}
                   displayType="block"
                   fullWidth
@@ -599,7 +609,7 @@ const Register = () => {
                   }}
                   rounded="md"
                   size="lg"
-                  styles={'w-full h-[50px]'}
+                  styles={"w-full h-[50px]"}
                   title="Login"
                   type="button"
                 >
