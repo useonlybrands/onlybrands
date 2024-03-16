@@ -1,20 +1,32 @@
-import React from 'react';
-import classNames from '@/utils/classsesNames';
-import { Disclosure } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import { useUser } from '@supabase/auth-helpers-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import MenuLoggedIn from './MenuLoggedIn';
-import MenuNotLoggedIn from './MenuNotLoggedIn';
-import Navigation from './navigation';
-import { NavigationItem } from './types';
-import { DynamicWidget } from '@dynamic-labs/sdk-react-core';
+import React, { useState } from "react";
+import classNames from "@/utils/classsesNames";
+import { Disclosure } from "@headlessui/react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useUser } from "@supabase/auth-helpers-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import MenuLoggedIn from "./MenuLoggedIn";
+import MenuNotLoggedIn from "./MenuNotLoggedIn";
+import Navigation from "./navigation";
+import { NavigationItem } from "./types";
+import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
+import { useUserWallets } from "@dynamic-labs/sdk-react-core";
 
 const Header: React.FC = (): React.ReactElement => {
+  const [isWalletConnected, setWalletConnected] = useState(false);
+
   const router = useRouter();
   const user = useUser();
+  const userWallets = useUserWallets();
+
+  const handleWalletConnect = () => {
+    setWalletConnected(true);
+
+    if (isWalletConnected) {
+      router.push("/login");
+    }
+  };
 
   return (
     <Disclosure as="nav" className="bg-white border-b border-gray-400">
@@ -36,8 +48,16 @@ const Header: React.FC = (): React.ReactElement => {
                 </div>
 
                 <div className="flex items-center justify-center flex-1 sm:items-stretch sm:justify-start">
-                  <Link className="flex items-center flex-shrink-0 text-white" href="/">
-                    <Image alt="entry level devs" height={18} src="/logo.png" width={60} />
+                  <Link
+                    className="flex items-center flex-shrink-0 text-white"
+                    href="/"
+                  >
+                    <Image
+                      alt="entry level devs"
+                      height={18}
+                      src="/logo.png"
+                      width={60}
+                    />
                   </Link>
                 </div>
 
@@ -45,12 +65,14 @@ const Header: React.FC = (): React.ReactElement => {
                   <div className="flex space-x-2">
                     {Navigation.map((item: NavigationItem) => (
                       <Link
-                        aria-current={item.pathname === router.pathname ? 'page' : false}
+                        aria-current={
+                          item.pathname === router.pathname ? "page" : false
+                        }
                         className={classNames(
                           item.pathname === router.pathname
-                            ? 'bg-gray-800 text-white'
-                            : 'text-gray-800 hover:bg-primary-700 hover:text-white',
-                          'px-3 py-2 rounded text-sm'
+                            ? "bg-gray-800 text-white"
+                            : "text-gray-800 hover:bg-primary-700 hover:text-white",
+                          "px-3 py-2 rounded text-sm"
                         )}
                         href={item.pathname}
                         key={item.name}
@@ -62,9 +84,10 @@ const Header: React.FC = (): React.ReactElement => {
                 </div>
 
                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                  {/** Notifications */}
-                  {/* {user?.id ? <MenuLoggedIn /> : <MenuNotLoggedIn />} */}
-                  <DynamicWidget innerButtonComponent="Connect"></DynamicWidget>
+                  <DynamicWidget innerButtonComponent="Connect with Dynamic"></DynamicWidget>
+                </div>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                  {/* <DynamicWidget innerButtonComponent="Connect with Worldcoin"></DynamicWidget> */}
                 </div>
               </div>
             </div>
@@ -73,12 +96,14 @@ const Header: React.FC = (): React.ReactElement => {
               <div className="px-2 pt-2 pb-3 space-y-1">
                 {Navigation.map((item: NavigationItem) => (
                   <Link
-                    aria-current={item.pathname === router.pathname ? 'page' : false}
+                    aria-current={
+                      item.pathname === router.pathname ? "page" : false
+                    }
                     className={classNames(
                       item.pathname === router.pathname
-                        ? 'bg-gray-900 text-white'
-                        : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                      'block px-3 py-2 rounded-md text-base font-medium'
+                        ? "bg-gray-900 text-white"
+                        : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                      "block px-3 py-2 rounded-md text-base font-medium"
                     )}
                     href={item.pathname}
                     key={item.name}
