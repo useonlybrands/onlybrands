@@ -10,6 +10,7 @@ import { useRouter } from 'next/router';
 import { Fragment, useEffect, useState } from 'react';
 import {useApi} from "../hooks/useApi";
 import { IDKitWidget, VerificationLevel, ISuccessResult } from '@worldcoin/idkit'
+import ProfileKeyVal  from './profilekeyval'
 
 
 
@@ -127,28 +128,26 @@ const Profile = () => {
                   
                 </div>
 
-                <h1 className="mb-1 text-xl font-bold">{userData.name}</h1>
+
                 <div className="flex flex-col items-center justify-center space-y-3">
-                <div className="flex flex-col items-center justify-center space-y-2">
-                  <h3 className="mb-1 text-l font-semibold">@{userData.username}</h3>
+                
+                  <div className="flex flex-col items-center justify-center ">  
+                  <h1 className="text-xl font-bold">{userData.name}</h1>
+                  <h3 className="mb-2 ">{userData.follower_count} followers</h3>
+                  </div>
+                  <ProfileKeyVal label="Username" content={userData.username} />
+                  {/* <h3 className="mb-1 text-l justify-center items-center space-x-2">Platform: {userData.platform}</h3> */}
+                  <ProfileKeyVal label="Platform" content={userData.platform} />
+
+                  <ProfileKeyVal label="Industry" content={userData.industry} />
+
+                  {/* <h3 className="mb-1 text-l justify-center items-center space-x-2">Industry: {userData.industry}</h3> */}
+
+                  <ProfileKeyVal label="Sex" content={userData.sex} />
+
+                  <ProfileKeyVal label="Age" content={userData.age} />
                   
-                  <br></br>
-                  
-
-
-
-
-                  <h3 className="mb-1 text-l justify-center items-center space-x-2">Platform: {userData.platform}</h3>
-
-                  <h3 className="mb-1 text-l justify-center items-center space-x-2">Industry: {userData.industry}</h3>
-
-                  <h3 className="mb-1 text-l justify-center items-center space-x-2">Followers: {userData.follower_count}</h3>
-
-                  <h3 className="mb-1 text-l justify-center items-center space-x-2">Sex: {userData.sex}</h3>
-
-                  <h3 className="mb-1 text-l  justify-center items-center space-x-2">Age: {userData.age}</h3>
-
-                  <h3 className="mb-1 text-l font-normal justify-center items-center space-x-2">Language: {userData.language}</h3>
+                  <ProfileKeyVal label="Language" content={userData.language} />
                   
                   <div className="flex items-center justify-center space-x-2">
                     <Link href={`mailto:${userData.email}`} title="Drop me a message">
@@ -167,7 +166,6 @@ const Profile = () => {
                     {showWallet && (
                       <h3 className="mb-1 text-l font-semibold" onClick={toggleWallet}>{userData.wallet}</h3>
                     )}
-                  </div>
                   
                   </div>
                   
