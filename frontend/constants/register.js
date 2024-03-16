@@ -121,7 +121,7 @@ export const INITIAL_VALUES = {
   brandName: "",
   brandDescription: "",
   brandWebsite: "",
-  industry: [],
+  industries: [],
   size: [],
   location: [],
   avatar_url: "",
@@ -167,7 +167,7 @@ export const INFLUENCER_FIELDS = [
     type: "text",
   },
   {
-    name: "industry",
+    name: "industries",
     label: "Industry",
     placeholder: "What is your Industry?",
     required: true,
@@ -202,7 +202,7 @@ export const BRAND_FIELDS = [
     type: "text",
   },
   {
-    name: "industry",
+    name: "industries",
     label: "Industry",
     placeholder: "What is the industry of your brand?",
     required: true,
@@ -262,13 +262,13 @@ export const InfluencerSchemaValidation = Yup.object().shape({
   email: emailValidation("email address"),
   age: requiredNumber("age"),
   platform: stringOrArray("platform"),
-  industry: stringOrArray("industry"),
+  industries: stringOrArray("industries"),
 });
 
 export const BrandSchemaValidation = Yup.object().shape({
   brandName: requiredString("brandName"),
   brandWebsite: requiredString("brandWebsite"),
-  industry: stringOrArray("Industry"),
+  industries: stringOrArray("Industry"),
   size: stringOrArray("Size"),
   brandDescription: requiredString("brand description")
     .max(2000, "Must be 2000 characters or less")

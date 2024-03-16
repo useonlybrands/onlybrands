@@ -10,6 +10,7 @@ import {
   onlyContract_ADDRESS,
 } from "@/constants/contracts";
 import { PublicClient, WalletClient } from "viem";
+import {Influencer} from "@/components/Influencers/JobsItem/types";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 type AuthFetch = (
@@ -23,6 +24,7 @@ const authFetch: AuthFetch = (url, authToken, init = undefined) => {
     headers: {
       ...(init?.headers || {}),
       Authorization: `Bearer ${authToken}`,
+      "X-hasura-admin-secret": "9K3iMkSQ37GdvLVHm13LT5pGwTuSnCW5NjjTgG7LJhEEwKGbW3WjViF3i4c5NGLR",
       "Content-Type": "application/json",
     },
   });
@@ -39,23 +41,10 @@ export interface BrandInfo {
   image: any;
 }
 
-export interface InfluencerInfo {
-  username: any;
-  name: string;
-  email: string;
-  wallet: string;
-  platform: any;
-  industry: any;
-  followerCount?: number;
-  sex: any;
-  age: number;
-  image: any;
-}
-
 export interface BackendProfile {
   profileType: "brand" | "influencer";
   brandInfo?: BrandInfo;
-  influencerInfo?: InfluencerInfo;
+  influencerInfo?: Influencer;
 }
 
 export interface BidInfo {
@@ -110,20 +99,24 @@ export const useApi: () => UseApi = () => {
     console.log("profile:", profile);
     switch (profile.profileType) {
       case ROLES.BRAND:
-        return authFetch("/create_brand/", dynamicContext.authToken, {
+        return authFetch("/brand", dynamicContext.authToken, {
           headers: {
             Authorization: `Bearer ${dynamicContext.authToken}`,
           },
           method: "POST",
-          body: JSON.stringify(profile.brandInfo),
+          body: JSON.stringify({
+            object: profile.brandInfo
+          }),
         });
       case ROLES.INFLUENCER:
-        return authFetch("/create_influencer/", dynamicContext.authToken, {
+        return authFetch("/influencers", dynamicContext.authToken, {
           headers: {
             Authorization: `Bearer ${dynamicContext.authToken}`,
           },
           method: "POST",
-          body: JSON.stringify(profile.influencerInfo),
+          body: JSON.stringify({
+            object: profile.influencerInfo
+          }),
         });
     }
   };
@@ -131,12 +124,11 @@ export const useApi: () => UseApi = () => {
   useEffect(() => {
     const loadData = async () => {
       console.log(dynamicContext.authToken);
-      await authFetch("/get_profile", dynamicContext.authToken);
-      const profileRes = await authFetch(
-        "/get_profile",
-        dynamicContext.authToken
-      );
       try {
+        const profileRes = await authFetch(
+            `/user/${dynamicContext.user?.username}`,
+            dynamicContext.authToken
+        );
         const profile = await profileRes.json();
         setBackendProfile(profile);
       } catch (e) {
@@ -189,7 +181,10 @@ export const useApi: () => UseApi = () => {
       args: [marketplaceContract_ADDRESS, bidInfo.budget],
     });
     console.log(request);
-    console.log(await walletClient.writeContract(request));
+    const approvalHash = await walletClient.writeContract(request);
+    await publicClient.waitForTransactionReceipt({
+      hash: approvalHash,
+    });
 
     // Create offer with amount
     const { request: createOfferReq } = await publicClient.simulateContract({
@@ -201,7 +196,12 @@ export const useApi: () => UseApi = () => {
       args: [bidInfo.influencerWallet, bidInfo.impressions, bidInfo.budget],
     });
     console.log(createOfferReq);
-    console.log(await walletClient.writeContract(createOfferReq));
+    const createOfferHash = await walletClient.writeContract(createOfferReq);
+    await publicClient.waitForTransactionReceipt({
+      hash: approvalHash,
+    });
+
+    fetchBalance();
   };
 
   return {

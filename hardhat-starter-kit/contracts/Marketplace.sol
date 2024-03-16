@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
+import "@openzeppelin/contracts/utils/Strings.sol";
+
 import { FunctionsClient } from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
 import { ConfirmedOwner } from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
 import { FunctionsRequest } from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
@@ -35,10 +37,24 @@ contract Marketplace is FunctionsClient, ConfirmedOwner {
         address indexed brand
     );
 
+    event SettlementStarted(
+        uint adId,
+        address influencer,
+        address brand,
+        string url
+    );
+
+    event SettlementCompleted(
+        uint adId,
+        address influencer,
+        address brand,
+        uint views
+    );
+
     /**
      * @dev Enum representing the status of an advertisement deal.
      * 
-     * @notice The status lifecycle of an ad is as follows:
+     * @notice The status lifecycle of an ad:
      * - Open: The brand has made an offer to the influencer.
      * - Live: The influencer has accepted the deal, and the advertisement is now live.
      * - Settling: The influencer has submitted the post URL for verification. 
@@ -58,14 +74,17 @@ contract Marketplace is FunctionsClient, ConfirmedOwner {
         Status status;
     }
     
-    uint32 gasLimit = 300000; // Callback gas limit
-    bytes32 donID;
-    address router;
-    string source;
+    uint32 public gasLimit = 300000; // Callback gas limit
+    bytes32 public donID;
+    address public router;
+    string public source;
 
+    uint64 public subscriptionId;
     uint public nextAdId = 1;
     mapping(uint => Ad) public ads;
     OnlyToken public tokenContract;
+
+    mapping(bytes32 => uint) public requestIdToAdId;
 
     /**
      * @notice Initializes the Marketplace contract with the specified router address, donation ID, and source code for Chainlink function.
@@ -73,9 +92,10 @@ contract Marketplace is FunctionsClient, ConfirmedOwner {
      * @param _donID The donation ID for the Chainlink function
      * @param _source The source code for the Chainlink function in JavaScript
      */
-    constructor(address _router, bytes32 _donID, string memory _source, address _tokenContract) FunctionsClient(router) ConfirmedOwner(msg.sender) {
+    constructor(address _router, bytes32 _donID, uint64 _subscriptionId, string memory _source, address _tokenContract) FunctionsClient(_router) ConfirmedOwner(msg.sender) {
         router = _router;
         donID = _donID;
+        subscriptionId = _subscriptionId;
         source = _source;
         tokenContract = OnlyToken(_tokenContract);
     }
@@ -144,50 +164,77 @@ contract Marketplace is FunctionsClient, ConfirmedOwner {
     }
 
     /**
-     * @notice Sends an HTTP request for character information
-     * @param subscriptionId The ID for the Chainlink subscription
-     * @param args The arguments to pass to the HTTP request
-     * @return requestId The ID of the request
+     * @notice Initiates the settlement process for an advertisement
+     * @param adId The ID of the advertisement to settle
+     * @param url The URL of the post to verify views
      */
-    function sendRequest(
-        uint64 subscriptionId,
-        string[] calldata args
-    ) external onlyOwner returns (bytes32 requestId) {
+    function startSettlement(uint adId, string memory url) external returns (bytes32 requestId) {
+        Ad storage ad = ads[adId];
+        require(ad.influencer == msg.sender, "Only the influencer can initiate settlement");
+        require(ad.status == Status.Live, "Ad must be live to initiate settlement");
+
+        ad.status = Status.Settling;
+
+        // Construct arguments array for Chainlink request
+        string[] memory args = new string[](2);
+        args[0] = Strings.toString(adId);
+        args[1] = url;
+
+        emit SettlementStarted(adId, ad.influencer, ad.brand, url);
+
+        // Send request to Chainlink to verify views 
         FunctionsRequest.Request memory req;
         req.initializeRequestForInlineJavaScript(source); // Initialize the request with JS code
         if (args.length > 0) req.setArgs(args); // Set the arguments for the request
 
-        // // Send the request and store the request ID
-        bytes32 s_lastRequestId = _sendRequest(
+        // Send the request and store the request ID
+        requestId = _sendRequest(
             req.encodeCBOR(),
             subscriptionId,
             gasLimit,
             donID
         );
 
-        return s_lastRequestId;
+        requestIdToAdId[requestId] = adId;
+
+        return requestId;
     }
 
     /**
-     * @notice Callback function for fulfilling a request
+     * @notice Callback function for Chainlink to call once the request is fulfilled
      * @param requestId The ID of the request to fulfill
-     * @param response The HTTP response data
+     * @param response The HTTP response data containing views count
      * @param err Any errors from the Functions request
      */
     function fulfillRequest(
         bytes32 requestId,
         bytes memory response,
         bytes memory err
-    ) internal override {
-        // if (s_lastRequestId != requestId) {
-        //     revert UnexpectedRequestID(requestId); // Check if request IDs match
+    ) internal override { 
+        // if(response.length == 0) {
+        //     return;
         // }
-        // Update the contract's state variables with the response and any errors
-        // s_lastResponse = response;
-        // character = string(response);
-        // s_lastError = err;
+        // todo: handle errors later
+        uint views = abi.decode(response, (uint256));
+        uint adId = requestIdToAdId[requestId];
 
-        // Emit an event to log the response
-        // emit Response(requestId, character, s_lastResponse, s_lastError);
+        Ad storage ad = ads[adId];
+        require(ad.status == Status.Settling, "Ad must be in settling status");
+
+        if (views >= ad.views) {
+            // Full payment to influencer as views target met
+            tokenContract.transfer(ad.influencer, ad.paymentAmount);
+        } else {
+            // Calculate payment based on views achieved
+            uint paymentToInfluencer = (ad.paymentAmount * views) / ad.views;
+            uint refundToBrand = ad.paymentAmount - paymentToInfluencer;
+
+            tokenContract.transfer(ad.influencer, paymentToInfluencer);
+            tokenContract.transfer(ad.brand, refundToBrand);
+        }
+
+        emit SettlementCompleted(adId, ad.influencer, ad.brand, views);
+
+        delete ads[adId];
     }
 }

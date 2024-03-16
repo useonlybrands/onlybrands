@@ -26,7 +26,7 @@ const Register = () => {
   const router = useRouter();
   const allCountries = useCountries();
   const { Modal, isOpen, openModal, closeModal } = useModal();
-  const { user, updateProfile } = useApi();
+  const { user, updateProfile, dynamicContext } = useApi();
 
   const [formData, setFormData] = useState({});
   const [step, setStep] = useState(STEPS.SELECT_ROLE);
@@ -40,14 +40,14 @@ const Register = () => {
     // Field names for which options are available
     const PLATFORM_FIELD = "platform";
     const SIZE_FIELD = "size";
-    const INDUSTRY_FIELD = "industry";
+    const INDUSTRY_FIELD = "industries";
 
     // Object that maps field names to their available options.
     const fieldOptions = {
       platform: INFLUENCER_FIELDS.find((field) => field.name === PLATFORM_FIELD)
         .options,
       size: BRAND_FIELDS.find((field) => field.name === SIZE_FIELD).options,
-      industry: BRAND_FIELDS.find((field) => field.name === INDUSTRY_FIELD)
+      industries: BRAND_FIELDS.find((field) => field.name === INDUSTRY_FIELD)
         .options,
       location: allCountries,
     };
@@ -80,7 +80,7 @@ const Register = () => {
           values.brandName &&
           values.phone &&
           values.brandDescription &&
-          values.industry.length &&
+          values.industries.length &&
           values.size.length &&
           values.location.length
         );
@@ -124,9 +124,9 @@ const Register = () => {
               username: user.username,
               name: values.name,
               email: values.email,
-              wallet: user.wallet,
+              wallet: await dynamicContext.walletConnector.getAddress(),
               platform: values.platform[0].id,
-              industry: values.industry[0].id,
+              industries: values.industries[0].id,
               sex: values.gender,
               age: values.age,
               image: avatarURL,
@@ -137,8 +137,8 @@ const Register = () => {
           ? {
               name: user.username,
               email: values.email,
-              wallet: user.wallet,
-              industry: values.industry,
+              wallet: await dynamicContext.walletConnector.getAddress(),
+              industries: values.industries,
               size: values.size,
               description: values.description,
               image: values.image,
