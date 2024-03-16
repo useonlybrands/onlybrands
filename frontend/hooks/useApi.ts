@@ -1,9 +1,7 @@
 import {useDynamicContext, UserProfile} from "@dynamic-labs/sdk-react-core";
 import {useEffect, useState} from "react";
 import {UseDynamicContext} from "@dynamic-labs/sdk-react-core/src/lib/context/DynamicContext/useDynamicContext";
-import {num} from "starknet";
-import { getContract } from 'viem'
-import onlyContract from '../../hardhat-starter-kit/build/artifacts/contracts/OnlyToken.sol/OnlyToken.json'
+import {onlyContract_ABI, onlyContract_ADDRESS} from "@/constants/contracts";
 
 export interface BrandInfo {
 
@@ -109,14 +107,12 @@ export const useApi: () => UseApi = () => {
         if (!dynamicContext.walletConnector) return;
         const publicClient = await dynamicContext.walletConnector.getPublicClient();
 
-        const contract = getContract({
-            address: "0x5B557183636e4b72F05721036F3655af5885f282",
-            abi: onlyContract.abi,
-            // @ts-ignore
-            publicClient
-        });
-
-        const result = await contract.read.balanceOf(["0x239723C845f7Bd613Ec44d5511902E3A2d7A6aCF"]);
+        const result = await publicClient.readContract({
+            address: onlyContract_ADDRESS,
+            abi: onlyContract_ABI,
+            functionName: "balanceOf",
+            args: [await dynamicContext.walletConnector.getAddress()]
+        })
         console.log(result);
         return result
     }
