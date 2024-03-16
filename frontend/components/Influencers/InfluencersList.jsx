@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import Loader from '../UI/Loader';
 import JobCardItem from './JobsItem';
 
-const JobsList = ({ loading, error, jobs }) => {
+const InfluencersList = ({ loading, error, influencers }) => {
   const [currentLoading, setCurrentLoading] = useState(loading);
 
   useEffect(() => {
@@ -32,14 +32,14 @@ const JobsList = ({ loading, error, jobs }) => {
     return <div>{error?.message || error}</div>;
   }
 
-  if (!error && jobs?.length === 0 && !currentLoading) {
+  if (!error && influencers?.length === 0 && !currentLoading) {
     return (
       <ul className="grid w-full grid-cols-1 gap-5">
         <li className="w-full list-none">
           <div className="flex flex-col items-center justify-center p-5 space-y-5 text-center bg-white border border-gray-200 rounded-md shadow-sm">
-            <h3 className="text-2xl font-semibold text-gray-700">No jobs found</h3>
+            <h3 className="text-2xl font-semibold text-gray-700">No influencers found</h3>
             <p className="text-base font-light text-gray-500">
-              We couldn&apos;t find any jobs matching your search.
+              We couldn&apos;t find any influencers matching your search.
             </p>
           </div>
         </li>
@@ -50,11 +50,11 @@ const JobsList = ({ loading, error, jobs }) => {
   return (
     <section className="relative flex flex-col items-center justify-center col-span-12 mx-auto max-w-8xl sm:col-span-8">
       <ul className="grid w-full grid-cols-1 gap-5 h-fit">
-        {jobs?.length > 0 &&
-          jobs.map((job) => {
+        {influencers?.length > 0 &&
+            influencers.map((influencer) => {
             return (
-              <li className="w-full" key={job.id}>
-                <JobCardItem job={job} />
+              <li className="w-full" key={influencer.username}>
+                <JobCardItem job={influencer} />
               </li>
             );
           })}
@@ -63,10 +63,10 @@ const JobsList = ({ loading, error, jobs }) => {
   );
 };
 
-JobsList.propTypes = {
+InfluencersList.propTypes = {
   loading: PropTypes.bool,
   error: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-  jobs: PropTypes.arrayOf(
+  influencers: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string,
       title: PropTypes.string,
@@ -81,4 +81,4 @@ JobsList.propTypes = {
   ),
 };
 
-export default JobsList;
+export default InfluencersList;

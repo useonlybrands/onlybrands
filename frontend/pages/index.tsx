@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import Head from '@/components/partials/Head';
 import Hero from '@/components/UI/Hero';
-import JobsList from '@/components/Jobs/JobsList';
-import JobsSortBy from '@/components/Jobs/JobsSortBy';
+import JobsList from '@/components/Influencers/InfluencersList';
+import JobsSortBy from '@/components/Influencers/JobsSortBy';
 import Pagination from '@/components/UI/Pagination';
-import Filters from '@/components/Jobs/Filters';
+import Filters from '@/components/Influencers/Filters';
 import useFilteredJobs from '@/hooks/useFilteredJobs';
 import { useUser } from '@supabase/auth-helpers-react';
 import { useRouter } from 'next/router';
 import { ROLES } from '@/constants/register';
+import {useInfluencers} from "@/hooks/useInfluencers";
 
 const Home = (): React.ReactElement => {
   const router = useRouter();
@@ -28,6 +29,8 @@ const Home = (): React.ReactElement => {
     pageOptions.offset,
     pageOptions.limit
   );
+
+  const influencers = useInfluencers();
 
   const handlePageChange = (offset) => {
     setPageOptions({ ...pageOptions, offset });
@@ -75,7 +78,7 @@ const Home = (): React.ReactElement => {
             </div>
           </header>
 
-          <JobsList error={error} jobs={jobs} loading={loading} />
+          <JobsList error={null} influencers={influencers} loading={loading} />
         </section>
 
         <Filters filters={memoizedFilters} onChange={handleFiltersChange} />
