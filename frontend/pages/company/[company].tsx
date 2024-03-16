@@ -1,4 +1,4 @@
-import JobCard from '@/components/Jobs/JobsItem';
+import JobCard from '@/components/Influencers/JobsItem';
 import Hero from '@/components/UI/Hero';
 import ClientApi from '@/utils/initDatabase';
 import Loader from '@/components/UI/Loader';

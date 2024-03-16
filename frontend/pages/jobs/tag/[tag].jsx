@@ -1,4 +1,4 @@
-import JobsItem from '@/components/Jobs/JobsItem';
+import JobsItem from '@/components/Influencers/JobsItem';
 import Hero from '@/components/UI/Hero';
 import Loader from '@/components/UI/Loader';
 import useJobs from '@/hooks/useJobs';

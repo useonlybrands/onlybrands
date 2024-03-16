@@ -5,6 +5,7 @@ import JobActions from './JobActions';
 import JobContent from './JobContent';
 import { JobCardItemProps } from './types';
 import { ROLES } from '@/constants/register';
+import InfluencerActions from "@/components/Influencers/JobsItem/InfluencerActions";
 
 // const jobStatus = (job) => {
 //   switch (true) {
@@ -35,14 +36,14 @@ const JobCardItem = (props: JobCardItemProps): React.ReactElement => {
       <div className="grid grid-cols-12 gap-2 place-items-start">
         <div className="col-span-12 lg:col-span-2">
           <CompanyLogo
-            companyLogo={job.companyLogo}
-            companySlug={job.companySlug}
-            hasCompanyLogo={job.hasCompanyLogo}
+            companyLogo={job.image}
+            companySlug={job.email}
+            hasCompanyLogo={true}
           />
         </div>
         <div className="col-span-12 lg:col-span-9">
           <JobContent job={job} />
-          {isCandidate && <JobActions id={job.id} outlined />}
+          <InfluencerActions influencer={job}/>
         </div>
       </div>
     </div>

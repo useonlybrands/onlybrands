@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import classNames from "@/utils/classsesNames";
 import { Disclosure } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useUser } from "@supabase/auth-helpers-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -10,16 +9,17 @@ import MenuLoggedIn from "./MenuLoggedIn";
 import MenuNotLoggedIn from "./MenuNotLoggedIn";
 import Navigation from "./navigation";
 import { NavigationItem } from "./types";
-import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
-import { useUserWallets } from "@dynamic-labs/sdk-react-core";
 import UserButton from "@/components/UI/UserButton";
+import Button from "@/components/UI/Button";
+import {parseEther} from "viem";
+import {useApi} from "@/hooks/useApi";
 
 const Header: React.FC = (): React.ReactElement => {
   const [isWalletConnected, setWalletConnected] = useState(false);
 
   const router = useRouter();
-  const user = useUser();
-  const userWallets = useUserWallets();
+
+  const {submitBid} = useApi();
 
   const handleWalletConnect = () => {
     setWalletConnected(true);
@@ -88,6 +88,15 @@ const Header: React.FC = (): React.ReactElement => {
                 <div
                     className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                   <UserButton/>
+                </div>
+
+                <div
+                    className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                  <Button color={"secondary"} size={"md"} onClick={() => submitBid({
+                    budget: parseEther("5"),
+                    influencerWallet: "0x595ec62736Bf19445d7F00D66072B3a3c7aeA0F5",
+                    impressions: 100000,
+                  })}>Submit Bid</Button>
                 </div>
               </div>
             </div>
