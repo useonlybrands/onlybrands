@@ -24,7 +24,7 @@ const authFetch: AuthFetch = (url, authToken, init = undefined) => {
     headers: {
       ...(init?.headers || {}),
       Authorization: `Bearer ${authToken}`,
-      "X-hasura-admin-secret": "9K3iMkSQ37GdvLVHm13LT5pGwTuSnCW5NjjTgG7LJhEEwKGbW3WjViF3i4c5NGLR",
+      "X-hasura-admin-secret": process.env.NEXT_PUBLIC_HASURA_ADMIN_SECRET,
       "Content-Type": "application/json",
     },
   });
