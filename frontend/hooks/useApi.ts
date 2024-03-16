@@ -154,7 +154,10 @@ export const useApi: () => UseApi = () => {
             args: [marketplaceContract_ADDRESS, bidInfo.budget]
         });
         console.log(request);
-        console.log(await walletClient.writeContract(request));
+        const approvalHash = (await walletClient.writeContract(request));
+        await publicClient.waitForTransactionReceipt({
+            hash: approvalHash
+        });
 
         // Create offer with amount
         const { request: createOfferReq } = await publicClient.simulateContract({
@@ -166,7 +169,12 @@ export const useApi: () => UseApi = () => {
             args: [bidInfo.influencerWallet, bidInfo.impressions, bidInfo.budget]
         });
         console.log(createOfferReq);
-        console.log(await walletClient.writeContract(createOfferReq));
+        const createOfferHash  = (await walletClient.writeContract(createOfferReq));
+        await publicClient.waitForTransactionReceipt({
+            hash: approvalHash
+        });
+
+        fetchBalance();
     }
 
     return {
