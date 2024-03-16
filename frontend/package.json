@@ -18,6 +18,8 @@
     "chromatic": "npx chromatic --project-token=38aa0892285c"
   },
   "dependencies": {
+    "@dynamic-labs/ethereum": "*",
+    "@dynamic-labs/sdk-react-core": "*",
     "@headlessui/react": "^1.7.13",
     "@heroicons/react": "^2.0.16",
     "@supabase/auth-helpers-nextjs": "^0.5.6",
@@ -39,6 +41,7 @@
     "react-toastify": "^9.1.2",
     "sharp": "^0.32.0",
     "tailwindcss": "^3.2.7",
+    "viem": "1",
     "yup": "^1.0.2",
     "zustand": "^4.3.6"
   },

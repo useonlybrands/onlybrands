@@ -10,6 +10,7 @@ import MenuLoggedIn from './MenuLoggedIn';
 import MenuNotLoggedIn from './MenuNotLoggedIn';
 import Navigation from './navigation';
 import { NavigationItem } from './types';
+import { DynamicWidget } from '@dynamic-labs/sdk-react-core';
 
 const Header: React.FC = (): React.ReactElement => {
   const router = useRouter();
@@ -62,7 +63,8 @@ const Header: React.FC = (): React.ReactElement => {
 
                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                   {/** Notifications */}
-                  {user?.id ? <MenuLoggedIn /> : <MenuNotLoggedIn />}
+                  {/* {user?.id ? <MenuLoggedIn /> : <MenuNotLoggedIn />} */}
+                  <DynamicWidget innerButtonComponent="Connect"></DynamicWidget>
                 </div>
               </div>
             </div>
