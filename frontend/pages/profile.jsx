@@ -14,23 +14,26 @@ const UPLOAD_IMAGE_PATH = process.env.NEXT_PUBLIC_SUPABASE_UPLOAD_IMAGE_PATH;
 // I guess I should add stuff here
 const Profile = () => {
   const router = useRouter();
-  const {user, profile, dynamicContext} = useApi();
+  // const {user, profile, dynamicContext} = useApi();
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [userData, setuserData] = useState({});
-  useEffect(() => {
-    if (!dynamicContext.isAuthenticated) {
-      void router.push('/login');
-    }
-    console.log({
-      ...user,
-      ...profile
-    });
-    setuserData({
-      ...user,
-      ...profile
-    });
-
-  }, [dynamicContext.isAuthenticated]);
+  const [userData, setuserData] = useState({
+    username: "",
+    image: "https://"
+  });
+  // useEffect(() => {
+  //   if (!dynamicContext.isAuthenticated) {
+  //     void router.push('/login');
+  //   }
+  //   console.log({
+  //     ...user,
+  //     ...profile
+  //   });
+  //   setuserData({
+  //     ...user,
+  //     ...profile
+  //   });
+  //
+  // }, [dynamicContext.isAuthenticated]);
 
   return (
     <>
@@ -111,7 +114,7 @@ const Profile = () => {
                 <span>TODO: Settings Panel</span>
                 <br />
                 <span>...</span>
-                <pre>{JSON.stringify(user, null, 2)}</pre>
+                <pre>{JSON.stringify(userData, null, 2)}</pre>
               </section>
             </Tab.Panel>
           </Tab.Panels>
