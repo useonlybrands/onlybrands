@@ -76,10 +76,11 @@ const Profile = () => {
   };
 
   const onSuccess = async (proof: ISuccessResult) => {
-    window.location.href = "/profile";
-
-    const bool = await updateProfileWithWorldcoin(user.username, proof);
+    const bool = await updateProfileWithWorldcoin(user.username, JSON.stringify(proof));
     setWorlcoin(bool);
+
+    // window.location.href = "/profile";
+
   };
 
   return (
@@ -209,7 +210,7 @@ const Profile = () => {
                   )} */}
 
                   {worldcoin ? (
-                    <b>Connected with Worldcoin</b>
+                    <b>Verfied on Worldcoin ✅</b>
                   ) : (
                     <div>
                       <IDKitWidget
