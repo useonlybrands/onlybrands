@@ -332,24 +332,14 @@ export const useApi: () => UseApi = () => {
     });
 
     await authFetch("/bid", dynamicContext.authToken, {
-<<<<<<< Updated upstream
-        method: "POST",
-        body: JSONBig({ useNativeBigInt: true }).stringify({
-          ...bid,
-          status: "accepted"
-        })
-      }
-    );
-
-    fetchBids();
-=======
       method: "POST",
       body: JSONBig({ useNativeBigInt: true }).stringify({
         ...bid,
         status: "accepted",
       }),
     });
->>>>>>> Stashed changes
+
+    fetchBids();
   };
 
   const startSettlement = async (bid: BidInfo, url: string) => {
@@ -379,26 +369,15 @@ export const useApi: () => UseApi = () => {
     });
 
     await authFetch("/bid", dynamicContext.authToken, {
-<<<<<<< Updated upstream
-          method: "POST",
-          body: JSONBig({ useNativeBigInt: true }).stringify({
-            ...bid,
-            status: "completed"
-          })
-        }
-    );
-
-    fetchBids();
-  }
-=======
       method: "POST",
       body: JSONBig({ useNativeBigInt: true }).stringify({
         ...bid,
         status: "completed",
       }),
     });
+
+    fetchBids();
   };
->>>>>>> Stashed changes
 
   const fetchBids = async () => {
     const bidsRes = await authFetch(`/bid`, dynamicContext.authToken);
