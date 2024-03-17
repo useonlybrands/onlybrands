@@ -10,10 +10,10 @@ import { useUser } from '@supabase/auth-helpers-react';
 import { useRouter } from 'next/router';
 import { ROLES } from '@/constants/register';
 import {useInfluencers} from "@/hooks/useInfluencers";
+import {useApi} from "@/hooks/useApi";
 
 const Home = (): React.ReactElement => {
   const router = useRouter();
-  const user = useUser();
 
   const [action, setAction] = useState({
     title: 'Get Started',
@@ -40,16 +40,28 @@ const Home = (): React.ReactElement => {
     setPageOptions({ ...pageOptions, limit: Number(e.target.value), offset: 0 });
   };
 
-  useEffect(() => {
-    const role = user?.user_metadata?.role;
-    const title = role === ROLES.COMPANY ? 'Find an influencer' : 'Manage bids';
-    const path = role === ROLES.COMPANY ? '/jobs/new' : '/jobs';
+  const {user, authFetch, dynamicContext, refreshBalance} = useApi();
 
-    setAction({
-      title: title,
-      handler: () => router.push(path),
-    });
-  }, [router, user]);
+  useEffect(() => {
+    if (!dynamicContext?.primaryWallet) return;
+    if (localStorage.getItem("claimed_airdrop") !== "true") {
+      fetch("/api/airdrop?address=" + dynamicContext.primaryWallet.address, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          address: dynamicContext.primaryWallet.address
+        })
+      }).then(res => {
+        if (res.ok) {
+          localStorage.setItem("claimed_airdrop", "true")
+          alert("AirDrop claimed!")
+          refreshBalance()
+        }
+      })
+    }
+  }, [dynamicContext.primaryWallet]);
 
   return (
     <div className="min-h-screen mb-20">

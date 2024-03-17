@@ -92,6 +92,8 @@ export interface UseApi {
   fetchInfluencers: () => Promise<Influencer[]>;
   acceptBid: (bidId: number) => Promise<any>
   balance?: bigint;
+  authFetch: any;
+  refreshBalance: () => void;
 }
 export const useApi: () => UseApi = () => {
   const dynamicContext = useDynamicContext();
@@ -222,12 +224,14 @@ export const useApi: () => UseApi = () => {
   };
 
   const [balance, setBalance] = useState<bigint | undefined>(undefined);
-
-  useEffect(() => {
+  function refreshBalance() {
     fetchBalance().then((balance) => {
       setBalance(balance as bigint);
       fetchNextAdId().then((adid) => console.log(`Ad ID: ${adid}`));
     });
+  }
+  useEffect(() => {
+    refreshBalance()
   }, [dynamicContext.walletConnector]);
   const submitBid = async (bidInfo: BidInfo) => {
     console.log("Submitting bid", bidInfo);
@@ -353,5 +357,9 @@ export const useApi: () => UseApi = () => {
     fetchInfluencers,
     balance,
     submitBid,
+    authFetch: (url, init) => {
+      return authFetch(url, dynamicContext.authToken, init)
+    },
+    refreshBalance
   };
 };
