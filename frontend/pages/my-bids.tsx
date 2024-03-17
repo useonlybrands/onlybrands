@@ -9,11 +9,12 @@ const MyBids = () => {
     const {fetchBids, dynamicContext, user} = useApi();
     const [bids, setBids] = useState<BidInfo[]|undefined>(undefined);
     useEffect(() => {
+        if (!user) return;
         fetchBids().then(bids => {
             console.log("Received bids", bids)
-            setBids(bids.filter(bid => bid.influencerUsername === user.username))
+            setBids(bids.filter(bid => bid.influencer_username === user.username))
         })
-    }, [dynamicContext.walletConnector]);
+    }, [dynamicContext.primaryWallet, user]);
 
     // const bids: BidInfo[] = [
     //     {
