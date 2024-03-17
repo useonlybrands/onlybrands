@@ -354,8 +354,7 @@ export const useApi: () => UseApi = () => {
         }
       );
 
-      const { data } = await response.json();
-
+      const data = await response.json();
       const isBrandExist = data.brand?.length > 0;
       const isInfluencerExist = data.influencers?.length > 0;
 

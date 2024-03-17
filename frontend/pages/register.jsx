@@ -139,20 +139,22 @@ const Register = () => {
       brandInfo:
         values.role === ROLES.BRAND
           ? {
-              name: user.username,
+              username: user.username,
+              name: values.name,
               email: values.email,
               wallet: await dynamicContext.primaryWallet.address,
-              industries: values.industries,
-              size: values.size,
+              industry: values.industries[0].id,
+              size: values.size[0].id,
               description: values.description,
-              image: values.image,
+              image: avatarURL,
             }
           : {},
     };
 
     try {
+      console.log('before update profile', profile)
       const res = await updateProfile(profile);
-      console.log("updateProfile: ", res);
+      console.log("after update profile: ", res);
 
       return res;
     } catch (error) {
