@@ -24,8 +24,6 @@ import {
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import { readContract } from "viem/actions";
 
-
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 type AuthFetch = (
@@ -77,10 +75,17 @@ export interface BidInfo {
   // onchainId: bigint;
 }
 
+export interface CheckUsername {
+  data: {
+    brand: Array<any>;
+    influencer: Array<any>;
+  };
+}
+
 export type BidStatus = "";
 
 export interface UseApi {
-  // TODO: check in database if user is registered (isRegistered endpoint)
+  isOnboarded: (username: string) => Promise<any>;
   user: UserProfile;
   dynamicContext: UseDynamicContext;
   signMessage: (message: string) => any;
@@ -159,7 +164,6 @@ export const useApi: () => UseApi = () => {
     loadData();
   }, [dynamicContext.authToken]);
 
-
   const fetchBalance = async () => {
     const connector = dynamicContext.walletConnector;
     if (!connector) return;
@@ -170,7 +174,7 @@ export const useApi: () => UseApi = () => {
 
       const publicClient: any = await signerConnector.getPublicClient();
 
-      const result = await readContract(publicClient,{
+      const result = await readContract(publicClient, {
         address: onlyContract_ADDRESS,
         abi: onlyContract_ABI,
         functionName: "balanceOf",
@@ -301,11 +305,11 @@ export const useApi: () => UseApi = () => {
     const bidId = bid.id;
     if (!dynamicContext.walletConnector) return;
     const publicClient: PublicClient =
-        (await dynamicContext.walletConnector.getPublicClient()) as PublicClient;
+      (await dynamicContext.walletConnector.getPublicClient()) as PublicClient;
     const walletClient: WalletClient =
-        (await dynamicContext.walletConnector.getWalletClient(
-            chain_ID.toString()
-        )) as WalletClient;
+      (await dynamicContext.walletConnector.getWalletClient(
+        chain_ID.toString()
+      )) as WalletClient;
     const account = await dynamicContext.primaryWallet.address;
 
     const { request } = await publicClient.simulateContract({
@@ -370,21 +374,43 @@ export const useApi: () => UseApi = () => {
   }
 
   const fetchBids = async () => {
-    const bidsRes = await authFetch(
-        `/bid`,
-        dynamicContext.authToken
-    );
+    const bidsRes = await authFetch(`/bid`, dynamicContext.authToken);
     const bids = await bidsRes.json();
-    return bids.bid
+    return bids.bid;
   };
 
   const fetchInfluencers = async () => {
     const influencersRes = await authFetch(
-        `/influencers`,
-        dynamicContext.authToken
+      `/influencers`,
+      dynamicContext.authToken
     );
     const influencers = await influencersRes.json();
-    return influencers.influencers
+    return influencers.influencers;
+  };
+
+  const isOnboarded = async (username: string) => {
+    try {
+      const response = await authFetch(
+        `/check-username/${username}`,
+        dynamicContext.authToken,
+        {
+          headers: {
+            Authorization: `Bearer ${dynamicContext.authToken}`,
+          },
+          method: "GET",
+        }
+      );
+
+      const { data } = await response.json();
+
+      const isBrandExist = data.brand?.length > 0;
+      const isInfluencerExist = data.influencers?.length > 0;
+
+      return isBrandExist || isInfluencerExist;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
   };
 
   return {
@@ -401,5 +427,6 @@ export const useApi: () => UseApi = () => {
     fetchInfluencers,
     balance,
     submitBid,
+    isOnboarded,
   };
 };
