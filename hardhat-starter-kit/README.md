@@ -496,6 +496,10 @@ npx hardhat run scripts/deployment/deployMarketplace.js --network arbitrumSepoli
 * Note- it uses hardcoded erc20  addr for now * 
 
 
+
+#### settle up manually 
+npx hardhat settle-up --ad-id 1 --views 1000 --marketplace 0x22bF3c1bF4D4b5508Eb2AF99bBE565F7e2375DCb # chiliz spicy
+
 ---
 old 
 
@@ -516,3 +520,4 @@ https://github.com/bshevchenko/updev/blob/main/packages/hardhat/contracts/upDevF
 
 https://ethglobal.com/events/london2024/prizes#chiliz
 https://ethglobal.com/events/london2024/prizes#celo
+
