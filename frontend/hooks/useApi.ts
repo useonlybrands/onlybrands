@@ -95,7 +95,8 @@ export interface UseApi {
   fetchBalance: () => Promise<any>;
   fetchBids: () => Promise<BidInfo[]>;
   fetchInfluencers: () => Promise<Influencer[]>;
-  acceptBid: (bidId: number) => Promise<any>;
+  acceptBid: (bid: BidInfo) => Promise<any>;
+  startSettlement: (bid: BidInfo, url: string) => Promise<any>;
   balance?: bigint;
 }
 export const useApi: () => UseApi = () => {
@@ -300,7 +301,8 @@ export const useApi: () => UseApi = () => {
     fetchBalance();
   };
 
-  const acceptBid = async (bidId: number) => {
+  const acceptBid = async (bid: BidInfo) => {
+    const bidId = bid.id;
     if (!dynamicContext.walletConnector) return;
     const publicClient: PublicClient =
       (await dynamicContext.walletConnector.getPublicClient()) as PublicClient;
@@ -324,7 +326,52 @@ export const useApi: () => UseApi = () => {
     await publicClient.waitForTransactionReceipt({
       hash: acceptOfferHash,
     });
+
+    await authFetch("/bid", dynamicContext.authToken, {
+        method: "POST",
+        body: JSONBig({ useNativeBigInt: true }).stringify({
+          ...bid,
+          status: "accepted"
+        })
+      }
+    );
   };
+
+  const startSettlement = async (bid: BidInfo, url: string) => {
+    const bidId = bid.id;
+    if (!dynamicContext.walletConnector) return;
+    const publicClient: PublicClient =
+        (await dynamicContext.walletConnector.getPublicClient()) as PublicClient;
+    const walletClient: WalletClient =
+        (await dynamicContext.walletConnector.getWalletClient(
+            chain_ID.toString()
+        )) as WalletClient;
+    const account = await dynamicContext.primaryWallet.address;
+
+    const { request } = await publicClient.simulateContract({
+      // @ts-ignore
+      account,
+      address: marketplaceContract_ADDRESS,
+      abi: marketplaceContract_ABI,
+      functionName: "startSettlement",
+      args: [bidId.toString(), url],
+    });
+    console.log(request);
+
+    const acceptOfferHash = await walletClient.writeContract(request);
+    await publicClient.waitForTransactionReceipt({
+      hash: acceptOfferHash,
+    });
+
+    await authFetch("/bid", dynamicContext.authToken, {
+          method: "POST",
+          body: JSONBig({ useNativeBigInt: true }).stringify({
+            ...bid,
+            status: "completed"
+          })
+        }
+    );
+  }
 
   const fetchBids = async () => {
     const bidsRes = await authFetch(`/bid`, dynamicContext.authToken);
@@ -375,6 +422,7 @@ export const useApi: () => UseApi = () => {
     fetchBalance,
     fetchBids,
     acceptBid,
+    startSettlement,
     fetchInfluencers,
     balance,
     submitBid,
