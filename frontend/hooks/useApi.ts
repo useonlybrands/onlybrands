@@ -24,7 +24,7 @@ import {
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import { readContract } from "viem/actions";
 
-const API_BASE_URL = process.env.ONRENDER_API || "";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 type AuthFetch = (
   url: string,
@@ -32,7 +32,7 @@ type AuthFetch = (
   init?: RequestInit
 ) => Promise<Response>;
 const authFetch: AuthFetch = (url, authToken, init = undefined) => {
-  return fetch(API_BASE_URL + url, {
+  return fetch("https://onlybrands-api.onrender.com" + url, {
     ...init,
     headers: {
       ...(init?.headers || {}),
