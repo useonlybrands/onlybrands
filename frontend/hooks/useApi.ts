@@ -76,6 +76,7 @@ export interface UseApi {
   submitBid: (bidInfo: BidInfo) => Promise<void>;
   fetchBalance: () => Promise<any>;
   fetchBids: () => Promise<BidInfo[]>;
+  fetchInfluencers: () => Promise<Influencer[]>;
   acceptBid: (bidId: number) => Promise<any>
   balance?: bigint;
 }
@@ -284,6 +285,15 @@ export const useApi: () => UseApi = () => {
     return bids.bid
   };
 
+  const fetchInfluencers = async () => {
+    const influencersRes = await authFetch(
+        `/influencers`,
+        dynamicContext.authToken
+    );
+    const influencers = await influencersRes.json();
+    return influencers.influencers
+  };
+
   return {
     user: dynamicContext.user,
     dynamicContext,
@@ -294,6 +304,7 @@ export const useApi: () => UseApi = () => {
     fetchBalance,
     fetchBids,
     acceptBid,
+    fetchInfluencers,
     balance,
     submitBid,
   };

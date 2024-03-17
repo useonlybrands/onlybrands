@@ -6,12 +6,12 @@ import {useEffect, useState} from "react";
 
 const MyBids = () => {
     const router = useRouter();
-    const {fetchBids, dynamicContext} = useApi();
+    const {fetchBids, dynamicContext, user} = useApi();
     const [bids, setBids] = useState<BidInfo[]|undefined>(undefined);
     useEffect(() => {
         fetchBids().then(bids => {
             console.log("Received bids", bids)
-            setBids(bids)
+            setBids(bids.filter(bid => bid.influencerUsername === user.username))
         })
     }, [dynamicContext.walletConnector]);
 

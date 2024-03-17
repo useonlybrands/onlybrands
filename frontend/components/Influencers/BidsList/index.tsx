@@ -53,6 +53,9 @@ const BidsList: FC<IProps> = ({bids}) => {
                             </li>
                         );
                     })}
+                {bids?.length === 0 && (
+                    <div>No bids for you at the moment.</div>
+                )}
             </ul>
         </section>
     )
