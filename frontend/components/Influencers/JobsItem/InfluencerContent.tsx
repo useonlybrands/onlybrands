@@ -23,6 +23,7 @@ const InfluencerContent = (props: JobContentProps): React.ReactElement => {
           jobTags={[influencer.industries]}
           jobType={influencer.industries}
           location={influencer.sex}
+          worldcoin={influencer.worldcoin}
         />
       </section>
 

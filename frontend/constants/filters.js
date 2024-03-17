@@ -42,19 +42,21 @@ export const jobCategories = [
 ];
 
 export const jobLocationTypes = [
-  { id: 'all', name: 'Any' },
-  { id: 'remote', name: 'Remote' },
-  { id: 'on-site', name: 'On-Site' },
-  { id: 'hybrid', name: 'Hybrid' },
+  { id: 'all', name: 'All' },
+  { id: 'facebook', name: 'Facebook' },
+  { id: 'ig', name: 'Instagram' },
+  { id: 'farcaster', name: 'Farcaster' },
+  { id: 'tiktok', name: 'TikTok' },
+  { id: 'twitter', name: 'Twitter' },
 ];
 
 export const jobTypes = [
-  { id: 'full-time', name: 'Full-Time' },
-  { id: 'part-time', name: 'Part-Time' },
-  { id: 'contract', name: 'Contract' },
-  { id: 'temporary', name: 'Temporary' },
-  { id: 'internship', name: 'Internship' },
-  { id: 'freelance', name: 'Freelance' },
+  { id: 'full-time', name: '<100' },
+  { id: 'part-time', name: '100-500' },
+  { id: 'contract', name: '500-1000' },
+  { id: 'temporary', name: '1000-5000' },
+  { id: 'internship', name: '5000-10000' },
+  { id: 'freelance', name: '>10000' },
 ];
 
 export const experienceLevelsOptions = [

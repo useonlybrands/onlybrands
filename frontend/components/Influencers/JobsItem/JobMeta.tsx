@@ -14,25 +14,13 @@ const JobMeta = (props: JobMetaProps): React.ReactElement => {
       <nav className="flex flex-col xs:flex-row gap-2 sm:gap-2 place-items-start sm:mt-0.5 mb-0.5 text-sm list-none">
         {location && (
           <li>
-            <button
-              className="flex items-center space-x-1 capitalize cursor-pointer hover:text-primary-700"
-              onClick={() => router.push(`/jobs/location/${location}`)}
-            >
-              <Image alt="remote" height={13} src="/img/location-icon.svg" width={13} />
-              <span>{location}</span>
-            </button>
-          </li>
-        )}
-
-        {jobType && (
-          <li>
-            <button
-              className="flex items-center space-x-2 capitalize cursor-pointer hover:text-primary-700"
-              onClick={() => router.push(`/jobs/type/${jobType}`)}
-            >
-              <span className="text-xs text-primary-200">⏺</span>
-              <span>{props?.jobType?.replace('_', ' ')}</span>
-            </button>
+              <button
+                  className="flex items-center space-x-1 capitalize cursor-pointer hover:text-primary-700"
+                  onClick={() => router.push(`/jobs/location/${location}`)}
+              >
+                  <span className="text-xs text-primary-200">⏺</span>
+                  <span>{location}</span>
+              </button>
           </li>
         )}
 
@@ -43,7 +31,7 @@ const JobMeta = (props: JobMetaProps): React.ReactElement => {
               onClick={() => router.push(`/jobs/category/${jobCategory}`)}
             >
               <span className="text-xs text-primary-200">⏺</span>
-              <span>{props?.jobCategory?.replace('_', ' ')}</span>
+              <span>Platform: {props?.jobCategory?.replace('_', ' ')}</span>
             </button>
           </li>
         )}
@@ -63,6 +51,18 @@ const JobMeta = (props: JobMetaProps): React.ReactElement => {
             />
           </li>
         )}
+
+          {(
+              <li>
+                  <button
+                      className="flex items-center space-x-2 capitalize cursor-pointer hover:text-primary-700"
+                      onClick={() => router.push(`/jobs/category/`)}
+                  >
+                      <span className="text-xs text-primary-200">⏺</span>
+                      <span>World ID: {props?.worldcoin ? "Linked" : "None"}</span>
+                  </button>
+              </li>
+          )}
       </nav>
       {/* list of skills/tags */}
       {jobTags?.length > 0 && <JobTags tags={jobTags} />}

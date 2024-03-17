@@ -31,4 +31,5 @@ export interface JobMetaProps {
   jobCategory: string;
   jobSalary: number;
   jobTags: string[];
+  worldcoin: string
 }

@@ -92,9 +92,9 @@ const Filters = (props: IFiltersProps): React.ReactElement => {
               onChange={handleOnChangeCategories}
               options={jobCategories}
               optionsSelected={categoriesSelected}
-              placeholder="e.g. Software Engineer..."
+              placeholder="e.g. Food, Finance..."
               setTouched={() => {}}
-              title="Specialties"
+              title="Industries"
               touched={false}
             />
           )}
@@ -106,7 +106,7 @@ const Filters = (props: IFiltersProps): React.ReactElement => {
             onChange={handleLocationTypesChange}
             options={jobLocationTypes}
             optionSelected={jobLocationTypesSelected}
-            title="In Person/Remote"
+            title="Platform"
           />
         </Suspense>
 
@@ -117,20 +117,20 @@ const Filters = (props: IFiltersProps): React.ReactElement => {
             onChange={handleJobTypesChange}
             options={jobTypes}
             optionsSelected={jobTypesSelected}
-            title="Job Type"
+            title="Followers"
           />
         </Suspense>
 
-        {/* Experience Level */}
-        <Suspense fallback={<Fallback message="Loading Experience Levels..." />}>
-          <Checkbox
-            multiple
-            onChange={handleExperienceLevelsChange}
-            options={experienceLevelsOptions}
-            optionsSelected={experienceLevelsSelected}
-            title="Experience Level"
-          />
-        </Suspense>
+        {/*/!* Experience Level *!/*/}
+        {/*<Suspense fallback={<Fallback message="Loading Experience Levels..." />}>*/}
+        {/*  <Checkbox*/}
+        {/*    multiple*/}
+        {/*    onChange={handleExperienceLevelsChange}*/}
+        {/*    options={experienceLevelsOptions}*/}
+        {/*    optionsSelected={experienceLevelsSelected}*/}
+        {/*    title="Gender"*/}
+        {/*  />*/}
+        {/*</Suspense>*/}
       </div>
     </aside>
   );
