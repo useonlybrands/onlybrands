@@ -6,28 +6,31 @@ import React, {useState} from "react";
 import {parseEther} from "viem";
 import {useApi} from "@/hooks/useApi";
 import {Influencer} from "@/components/Influencers/JobsItem/types";
+import useModal from "@/hooks/useModal";
 
 interface IProps {
-    influencer: Influencer
+    influencer: Influencer,
+    onSubmitBid: any
 }
-const InfluencerActions: React.FC<IProps> = ({influencer}) => {
+const InfluencerActions: React.FC<IProps> = ({influencer, onSubmitBid}) => {
     const {submitBid, user, dynamicContext} = useApi();
 
     const [createBidStatus, setCreateBidStatus] = useState("idle");
 
-    const sendBid = async () => {
+    const sendBid = async (formData: any) => {
         setCreateBidStatus("busy");
         try {
+
             await submitBid({
-                budget: parseEther("5"),
+                budget: parseEther(formData.budget),
                 influencerWallet: influencer.wallet,
                 influencerUsername: influencer.username,
                 brandUsername: user.username,
                 brandWallet: await dynamicContext.primaryWallet.address,
-                impressions: influencer.followerCount || 50000,
+                impressions: formData.impressions,
                 status: "pending",
-                title: "Example demo",
-                description: "Please show abc in pic"
+                title: formData.title,
+                description: formData.description
             })
         } catch (e) {
             console.error(e);
@@ -40,7 +43,9 @@ const InfluencerActions: React.FC<IProps> = ({influencer}) => {
         <div className="absolute bottom-2.5 right-3">
             <Button
                 className={`rounded-lg flex flex-row items-end justify-end text-gray-500 hover:text-primary-700`}
-                onClick={() => sendBid()}
+                onClick={() => {
+                    onSubmitBid(influencer, sendBid)
+                }}
                 title={"Submit Bid"}
                 color={createBidStatus === "busy" ? "white" : "primary"}
                 disabled={createBidStatus !== "idle"}

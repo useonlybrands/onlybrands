@@ -10,8 +10,15 @@ import { useUser } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 import { ROLES } from "@/constants/register";
 import { useInfluencers } from "@/hooks/useInfluencers";
-import { useApi } from "@/hooks/useApi";
+import {BidInfo, useApi} from "@/hooks/useApi";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import useModal from "@/hooks/useModal";
+import useStatefulModal from "@/hooks/useStatefulModal";
+import {Influencer} from "@/components/Influencers/JobsItem/types";
+import Button from "@/components/UI/Button";
+import TextField from "@/components/Form/TextField";
+import {parseEther} from "viem";
+import {ArrowDownCircleIcon, CheckCircleIcon, ClockIcon, ExclamationTriangleIcon} from "@heroicons/react/24/solid";
 
 const Home = (): React.ReactElement => {
   const router = useRouter();
@@ -75,6 +82,8 @@ const Home = (): React.ReactElement => {
     fetchData();
   }, [user]);
 
+  const { Modal, isOpen, openModal, closeModal, setModalState } = useStatefulModal();
+
   return (
     <div className="min-h-screen mb-20">
       <Head />
@@ -108,11 +117,78 @@ const Home = (): React.ReactElement => {
             error={null}
             influencers={influencers}
             loading={loading}
+            onSubmitBid={(influencer: Influencer, submitBid: any) => {
+              setModalState({
+                influencer,
+                submitBid
+              });
+              openModal()
+            }}
           />
         </section>
 
         <Filters filters={memoizedFilters} onChange={handleFiltersChange} />
       </section>
+
+      <Modal>
+        {({modalState, closeModal}) => {
+          const [createBidStatus, setCreateBidStatus] = useState("idle");
+          const {influencer, submitBid} = modalState;
+          const [formData, setFormData] = useState<Record<any, any>>({});
+
+          return (
+            <section className="grid w-full grid-cols-1 gap-2">
+              <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl md:text-3xl">Submit Bid</h1>
+              <ul className="flex flex-col w-full">
+                {[
+                  {name: "title", label:"Title", required:true, placeholder:"Title"},
+                  {name: "description", label:"Description", required:true, placeholder:"Description"},
+                  {name: "impressions", label:"Required Likes", required:true, placeholder:"Required Likes"},
+                  {name: "budget", label:"Max Payout", required:true, placeholder:"Max Payout"}
+                ].map((field) => (
+                    <li className="block w-full mb-2" key={field.name}>
+                      {(
+                          <TextField
+                              label={field.label}
+                              name={field.name}
+                              onChange={e => {
+                                setFormData({
+                                  ...formData,
+                                  [field.name]: e.target.value
+                                })
+                              }}
+                              placeholder={field.placeholder}
+                              required={field.required}
+                              title={field.label}
+                              type="textarea"
+                              value={formData[field.name]}
+                          />
+                      )}
+                    </li>
+                ))}
+              </ul>
+              <Button className={`rounded-lg flex flex-row items-end justify-end text-gray-500 hover:text-primary-700`}
+                      size="md" color="primary" onClick={() => {
+                submitBid(formData);
+                closeModal()
+              }}
+                      color={createBidStatus === "busy" ? "white" : "primary"}
+                      disabled={createBidStatus !== "idle"}>
+                <div className={"flex flex-row gap-2"}>
+                  <div>{createBidStatus === "busy" ? "Submitting.." :
+                      createBidStatus === "idle" ? "Submit bid" :
+                          createBidStatus === "success" ? "Bid submitted!" : "Error occurred"}</div>
+                  <div className="w-5 h-full m-auto">
+                    {createBidStatus === "busy" ? <ClockIcon/> :
+                        createBidStatus === "idle" ? <ArrowDownCircleIcon/> :
+                            createBidStatus === "success" ? <CheckCircleIcon/> : <ExclamationTriangleIcon/>}
+                  </div>
+                </div>
+              </Button>
+            </section>
+          )
+        }}
+      </Modal>
     </div>
   );
 };

@@ -329,8 +329,10 @@ export const useApi: () => UseApi = () => {
     await authFetch("/bid", dynamicContext.authToken, {
         method: "POST",
         body: JSONBig({ useNativeBigInt: true }).stringify({
-          ...bid,
-          status: "accepted"
+          object: {
+            ...bid,
+            status: "accepted"
+          }
         })
       }
     );
@@ -367,8 +369,10 @@ export const useApi: () => UseApi = () => {
     await authFetch("/bid", dynamicContext.authToken, {
           method: "POST",
           body: JSONBig({ useNativeBigInt: true }).stringify({
-            ...bid,
-            status: "completed"
+            object: {
+              ...bid,
+              status: "completed"
+            }
           })
         }
     );
