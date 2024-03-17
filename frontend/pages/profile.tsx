@@ -209,6 +209,8 @@ const Profile = () => {
                   )} */}
 
                   {worldcoin ? (
+                    <b>Connected with Worldcoin</b>
+                  ) : (
                     <div>
                       <IDKitWidget
                         app_id="app_staging_36f4ed912bf5790caf5fdb754bc5bf3c" // obtained from the Developer Portal
@@ -223,8 +225,6 @@ const Profile = () => {
                         )}
                       </IDKitWidget>
                     </div>
-                  ) : (
-                    <b>Connected with Worldcoin</b>
                   )}
                 </div>
               </section>
