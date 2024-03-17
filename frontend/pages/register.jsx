@@ -148,9 +148,9 @@ const Register = () => {
 
     try {
       const res = await updateProfile(profile);
-      console.log(res, "resssss");
+      console.log('updateProfile: ', res);
 
-      return { data, error };
+      return res;
     } catch (error) {
       const errorMessage = error?.message || "Server error occurred";
       toast.error(errorMessage);
@@ -166,12 +166,12 @@ const Register = () => {
       const avatarURL = formData.avatar_url
         ? await uploadImageToImgBB(formData)
         : "";
-      const { error } = await createInfluencerOrBrandHandler(
+      const res = await createInfluencerOrBrandHandler(
         formData,
         avatarURL
       );
 
-      if (error) {
+      if (!res.ok || res.status !== 200) {
         const errorMessage = error?.message || "Server error occurred";
         throw new Error(errorMessage);
       }
