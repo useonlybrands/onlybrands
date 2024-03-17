@@ -8,21 +8,21 @@ interface IProps {
 }
 
 const BidActions: FC<IProps> = ({bid}) => {
-    const {} = useApi();
+    const {acceptBid} = useApi();
     const isBusy = false;
     return (
         <div className="absolute bottom-2.5 right-3 flex flex-row gap-2">
             <Button
                 className={`rounded-lg flex flex-row items-end justify-end text-white hover:text-primary-700`}
-                onClick={() => {}}
-                title={"Decline"}
+                // onClick={() => acceptBid(bid.id)}
+
                 color={"danger"}
                 disabled={isBusy}
             >Decline</Button>
             <Button
                 className={`rounded-lg flex flex-row items-end justify-end text-gray-500 hover:text-primary-700`}
-                onClick={() => {}}
-                title={"Accept"}
+                onClick={() => acceptBid(bid.id)}
+
                 color={"primary"}
                 disabled={isBusy}
             >Accept</Button>

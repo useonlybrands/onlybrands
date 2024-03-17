@@ -60,6 +60,7 @@ export interface BidInfo {
   // ... other fields
   budget: bigint;
   impressions: number;
+  id?: number;
   // onchainId: bigint;
 }
 
@@ -81,6 +82,9 @@ export interface UseApi {
   updateProfile: (profile: BackendProfile) => Promise<Response>;
   submitBid: (bidInfo: BidInfo) => Promise<void>;
   fetchBalance: () => Promise<any>;
+  fetchBids: () => Promise<BidInfo[]>;
+  fetchInfluencers: () => Promise<Influencer[]>;
+  acceptBid: (bidId: number) => Promise<any>
   balance?: bigint;
 }
 export const useApi: () => UseApi = () => {
@@ -253,7 +257,49 @@ export const useApi: () => UseApi = () => {
     fetchBalance();
   };
 
-  const acceptOffer = (onchainId: bigint) => {};
+  const acceptBid = async (bidId: number) => {
+    if (!dynamicContext.walletConnector) return;
+    const publicClient: PublicClient =
+        (await dynamicContext.walletConnector.getPublicClient()) as PublicClient;
+    const walletClient: WalletClient =
+        (await dynamicContext.walletConnector.getWalletClient(
+            chain_ID.toString()
+        )) as WalletClient;
+    const account = await dynamicContext.walletConnector.getAddress();
+
+    const { request } = await publicClient.simulateContract({
+      // @ts-ignore
+      account,
+      address: marketplaceContract_ADDRESS,
+      abi: marketplaceContract_ABI,
+      functionName: "acceptOffer",
+      args: [bidId],
+    });
+    console.log(request);
+
+    const acceptOfferHash = await walletClient.writeContract(request);
+    await publicClient.waitForTransactionReceipt({
+      hash: acceptOfferHash,
+    });
+  };
+
+  const fetchBids = async () => {
+    const bidsRes = await authFetch(
+        `/bid`,
+        dynamicContext.authToken
+    );
+    const bids = await bidsRes.json();
+    return bids.bid
+  };
+
+  const fetchInfluencers = async () => {
+    const influencersRes = await authFetch(
+        `/influencers`,
+        dynamicContext.authToken
+    );
+    const influencers = await influencersRes.json();
+    return influencers.influencers
+  };
 
   const isOnboarded = async (username: string) => {
     const response = await authFetch(
@@ -286,6 +332,9 @@ export const useApi: () => UseApi = () => {
     profile: backendProfile,
     updateProfile,
     fetchBalance,
+    fetchBids,
+    acceptBid,
+    fetchInfluencers,
     balance,
     submitBid,
     isOnboarded,

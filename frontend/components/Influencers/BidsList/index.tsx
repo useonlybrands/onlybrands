@@ -5,6 +5,7 @@ import InfluencerActions from "@/components/Influencers/JobsItem/InfluencerActio
 import {BidInfo} from "@/hooks/useApi";
 import JobCardItem from "@/components/Influencers/JobsItem";
 import BidActions from "@/components/Influencers/BidsList/BidActions";
+import {formatEther, parseEther} from "viem";
 
 interface IProps {
     bids: BidInfo[]
@@ -29,6 +30,8 @@ const BidsItem: FC<{bid: BidInfo}> = ({bid}) => {
                 <div className="col-span-12 lg:col-span-9">
                     <h2 className="">{bid.title}</h2>
                     <p>{bid.description}</p>
+                    <p>Budget: {formatEther(bid.budget)} $ONLY</p>
+                    <p>Required likes: {bid.impressions}</p>
                     <BidActions bid={bid}/>
                     {/*<InfluencerActions influencer={influencer}/>*/}
                 </div>
@@ -50,6 +53,9 @@ const BidsList: FC<IProps> = ({bids}) => {
                             </li>
                         );
                     })}
+                {bids?.length === 0 && (
+                    <div>No bids for you at the moment.</div>
+                )}
             </ul>
         </section>
     )
