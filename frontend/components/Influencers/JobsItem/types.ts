@@ -14,6 +14,7 @@ export interface Influencer {
 
 export interface InfluencerCardItemProps {
   influencer: Influencer;
+  onSubmitBid: any;
 }
 
 export interface InfluencerContentProps {
@@ -31,4 +32,5 @@ export interface JobMetaProps {
   jobCategory: string;
   jobSalary: number;
   jobTags: string[];
+  worldcoin: string
 }

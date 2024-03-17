@@ -6,6 +6,7 @@ import InfluencerContent from './InfluencerContent';
 import {InfluencerCardItemProps, JobCardItemProps} from './types';
 import { ROLES } from '@/constants/register';
 import InfluencerActions from "@/components/Influencers/JobsItem/InfluencerActions";
+import useModal from "@/hooks/useModal";
 
 // const jobStatus = (job) => {
 //   switch (true) {
@@ -23,7 +24,7 @@ import InfluencerActions from "@/components/Influencers/JobsItem/InfluencerActio
 // }
 
 const JobCardItem = (props: InfluencerCardItemProps): React.ReactElement => {
-  const { influencer } = props;
+  const { influencer, onSubmitBid } = props;
   const user = useUser();
 
   return (
@@ -42,7 +43,7 @@ const JobCardItem = (props: InfluencerCardItemProps): React.ReactElement => {
         </div>
         <div className="col-span-12 lg:col-span-9">
           <InfluencerContent influencer={influencer} />
-          <InfluencerActions influencer={influencer}/>
+          <InfluencerActions influencer={influencer} onSubmitBid={onSubmitBid}/>
         </div>
       </div>
     </div>

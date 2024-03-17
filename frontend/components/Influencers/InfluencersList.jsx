@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import Loader from '../UI/Loader';
 import JobCardItem from './JobsItem';
 
-const InfluencersList = ({ loading, error, influencers }) => {
+const InfluencersList = ({ loading, error, influencers, onSubmitBid }) => {
   const [currentLoading, setCurrentLoading] = useState(loading);
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const InfluencersList = ({ loading, error, influencers }) => {
             influencers.map((influencer) => {
             return (
               <li className="w-full" key={influencer.username}>
-                <JobCardItem influencer={influencer} />
+                <JobCardItem influencer={influencer} onSubmitBid={onSubmitBid} />
               </li>
             );
           })}
