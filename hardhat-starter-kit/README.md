@@ -521,3 +521,8 @@ https://github.com/bshevchenko/updev/blob/main/packages/hardhat/contracts/upDevF
 https://ethglobal.com/events/london2024/prizes#chiliz
 https://ethglobal.com/events/london2024/prizes#celo
 
+
+CHILIZ DOESNT SHUPPORT ACCOUNT ASBTRICTION DYNAMIC 
+```
+npx hardhat settle-up --ad-id 2 --views 23 --marketplace 0x22bF3c1bF4D4b5508Eb2AF99bBE565F7e2375DCb --network spicy
+```

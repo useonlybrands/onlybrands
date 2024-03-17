@@ -23,9 +23,10 @@ task("settle-up", "Manual settle up")
         const marketplaceContract = await Marketplace.attach(marketplace)
         console.log("marketplaceContract", marketplace)
         
-        const result = await marketplaceContract.manualSettlement(adId, views)
+        const result = await marketplaceContract.connect(signer).manualSettlement(adId, views)
+        console.log(`result: ${JSON.stringify(result)}`)
         const tx = await result.wait()
-        console.log(result)
+        console.log(tx);
     })
 
 module.exports = {}
