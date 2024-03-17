@@ -14,6 +14,7 @@ export const evmNetworks = [
 
     rpcUrls: ["https://spicy-rpc.chiliz.com/"],
     vanityName: "Chiliz Testnet",
+    onlyToken: '0xD2A1a753C056aDd5165881DA7eA243D4eDf78A96',
   },
 ];
 
