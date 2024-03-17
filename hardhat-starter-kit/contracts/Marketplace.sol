@@ -211,15 +211,40 @@ contract Marketplace is FunctionsClient, ConfirmedOwner {
         bytes memory response,
         bytes memory err
     ) internal override { 
-        // if(response.length == 0) {
-        //     return;
-        // }
-        // todo: handle errors later
+        if(response.length == 0) {
+            return;
+        }
         uint views = abi.decode(response, (uint256));
         uint adId = requestIdToAdId[requestId];
 
         Ad storage ad = ads[adId];
         require(ad.status == Status.Settling, "Ad must be in settling status");
+
+        if (views >= ad.views) {
+            // Full payment to influencer as views target met
+            tokenContract.transfer(ad.influencer, ad.paymentAmount);
+        } else {
+            // Calculate payment based on views achieved
+            uint paymentToInfluencer = (ad.paymentAmount * views) / ad.views;
+            uint refundToBrand = ad.paymentAmount - paymentToInfluencer;
+
+            tokenContract.transfer(ad.influencer, paymentToInfluencer);
+            tokenContract.transfer(ad.brand, refundToBrand);
+        }
+
+        emit SettlementCompleted(adId, ad.influencer, ad.brand, views);
+
+        delete ads[adId];
+    }
+
+    /**
+     * @notice Manually settle an ad campaign for a given adId
+     * @param adId The ID of the ad to settle
+     * @param views The number of views to settle the ad with
+     */
+    function manualSettlement(uint adId, uint views) external onlyOwner {
+        Ad storage ad = ads[adId];
+        require(ad.status == Status.Live, "Ad must be in live status");
 
         if (views >= ad.views) {
             // Full payment to influencer as views target met
