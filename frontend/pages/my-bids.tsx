@@ -11,7 +11,7 @@ const MyBids = () => {
     useEffect(() => {
         fetchBids().then(bids => {
             console.log("Received bids", bids)
-            setBids(bids.filter(bid => bid.influencerUsername === user.username))
+            setBids(bids.filter(bid => bid.influencer_username === user.username))
         })
     }, [dynamicContext.walletConnector]);
 
