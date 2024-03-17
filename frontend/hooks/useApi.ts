@@ -231,9 +231,8 @@ export const useApi: () => UseApi = () => {
   useEffect(() => {
     fetchBalance().then((balance) => {
       setBalance(balance as bigint);
-      fetchNextAdId().then((adid) => console.log(`Ad ID: ${adid}`));
     });
-  }, [dynamicContext.walletConnector]);
+  }, [dynamicContext.primaryWallet]);
   const submitBid = async (bidInfo: BidInfo) => {
     console.log("Submitting bid", bidInfo);
     if (!dynamicContext.walletConnector) return;
@@ -335,6 +334,8 @@ export const useApi: () => UseApi = () => {
         })
       }
     );
+
+    fetchBids();
   };
 
   const startSettlement = async (bid: BidInfo, url: string) => {
@@ -371,6 +372,8 @@ export const useApi: () => UseApi = () => {
           })
         }
     );
+
+    fetchBids();
   }
 
   const fetchBids = async () => {

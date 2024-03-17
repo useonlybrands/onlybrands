@@ -3,12 +3,15 @@ import { useRouter } from 'next/router';
 import Button from '@/components/UI/Button';
 import CompanyLogo from '../CompanyLogo';
 import { HeroProps } from './types';
+import {useApi} from "@/hooks/useApi";
+import {formatEther} from "viem";
 
 const Hero: React.FC<HeroProps> = (props: HeroProps): React.ReactElement => {
   const { title = 'Decentralised sponsorships made easy', action, logo } = props;
 
-  const user = useUser();
   const router = useRouter();
+
+  const {balance, user} = useApi();
 
   return (
     <section className="flex flex-col items-center mb-10 justify-center min-w-screen min-h-[255px] bg-hero-pattern bg-center bg-no-repeat bg-cover max-w-8xl w-full rounded-b-4xl mx-auto bg-primary-1000">
@@ -19,8 +22,8 @@ const Hero: React.FC<HeroProps> = (props: HeroProps): React.ReactElement => {
       ) : null}
 
       <div className="flex flex-col items-center text-white">
-        <h1 className="block text-xl font-medium text-center sm:text-xl md:text-2xl">{title}</h1>
-        {action && user?.id ? (
+        <h1 className="block text-xl font-medium text-center sm:text-xl md:text-2xl">{balance ? `🍆${formatEther(balance)} $ONLY` : title}</h1>
+        {action && user?.username ? (
           <Button
             color="secondary"
             displayType="inline"
