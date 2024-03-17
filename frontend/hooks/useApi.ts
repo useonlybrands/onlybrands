@@ -223,9 +223,8 @@ export const useApi: () => UseApi = () => {
   useEffect(() => {
     fetchBalance().then((balance) => {
       setBalance(balance as bigint);
-      fetchNextAdId().then((adid) => console.log(`Ad ID: ${adid}`));
     });
-  }, [dynamicContext.walletConnector]);
+  }, [dynamicContext.primaryWallet]);
   const submitBid = async (bidInfo: BidInfo) => {
     console.log("Submitting bid", bidInfo);
     if (!dynamicContext.walletConnector) return;
@@ -350,7 +349,7 @@ export const useApi: () => UseApi = () => {
     await publicClient.waitForTransactionReceipt({
       hash: acceptOfferHash,
     });
-
+    
     await authFetch("/complete_bid", dynamicContext.authToken, {
       method: "POST",
       body: JSONBig({ useNativeBigInt: true }).stringify(bid)
