@@ -3,6 +3,8 @@ import {
   DynamicUserProfile,
 } from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
+import { ZeroDevSmartWalletConnectors } from "@dynamic-labs/ethereum-aa";
+
 import Layout from "@/components/partials/Layout";
 import { AppProps } from "@/types";
 import { toast, ToastContainer } from "react-toastify";
@@ -24,7 +26,7 @@ const App = (props: AppProps): JSX.Element => {
         //   },
         // },
         environmentId: process.env.NEXT_PUBLIC_DYNAMIC_ENV_ID || "",
-        walletConnectors: [EthereumWalletConnectors],
+        walletConnectors: [EthereumWalletConnectors, ZeroDevSmartWalletConnectors],
         evmNetworks,
         logLevel: "DEBUG",
         debugError: true,

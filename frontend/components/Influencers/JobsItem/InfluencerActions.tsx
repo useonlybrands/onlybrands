@@ -23,7 +23,7 @@ const InfluencerActions: React.FC<IProps> = ({influencer}) => {
                 influencerWallet: influencer.wallet,
                 influencerUsername: influencer.username,
                 brandUsername: user.username,
-                brandWallet: await dynamicContext.walletConnector.getAddress(),
+                brandWallet: await dynamicContext.primaryWallet.address,
                 impressions: influencer.followerCount || 50000,
                 status: "pending",
                 title: "Example demo",

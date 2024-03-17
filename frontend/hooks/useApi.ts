@@ -12,6 +12,19 @@ import {
 import { PublicClient, WalletClient } from "viem";
 import { Influencer } from "@/components/Influencers/JobsItem/types";
 import JSONBig from "json-bigint";
+import {
+  isZeroDevConnector,
+  ZeroDevSmartWalletConnectors,
+} from "@dynamic-labs/ethereum-aa";
+
+import {
+  DynamicContextProvider,
+  DynamicWidget,
+} from "@dynamic-labs/sdk-react-core";
+import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
+import { readContract } from "viem/actions";
+
+
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
@@ -152,34 +165,67 @@ export const useApi: () => UseApi = () => {
     loadData();
   }, [dynamicContext.authToken]);
 
-  const fetchBalance = async () => {
-    if (!dynamicContext.walletConnector) return;
-    const publicClient: any =
-      await dynamicContext.walletConnector.getPublicClient();
 
-    const result = await publicClient.readContract({
-      address: onlyContract_ADDRESS,
-      abi: onlyContract_ABI,
-      functionName: "balanceOf",
-      args: [await dynamicContext.walletConnector.getAddress()],
-    });
-    console.log(result);
-    return result;
+  const fetchBalance = async () => {
+    const connector = dynamicContext.walletConnector;
+    if (!connector) return;
+
+    if (isZeroDevConnector(connector)) {
+      const signerConnector = connector.getEOAConnector();
+      if (!signerConnector) return;
+
+      const publicClient: any = await signerConnector.getPublicClient();
+
+      const result = await readContract(publicClient,{
+        address: onlyContract_ADDRESS,
+        abi: onlyContract_ABI,
+        functionName: "balanceOf",
+        args: [await dynamicContext.primaryWallet.address],
+      });
+      console.log(result);
+      return result;
+    } else {
+      const publicClient: any = await connector.getPublicClient();
+      const result = await publicClient.readContract({
+        address: onlyContract_ADDRESS,
+        abi: onlyContract_ABI,
+        functionName: "balanceOf",
+        args: [await connector.fetchPublicAddress()],
+      });
+      console.log(result);
+      return result;
+    }
   };
 
   const fetchNextAdId = async () => {
-    if (!dynamicContext.walletConnector) return;
-    const publicClient: any =
-      await dynamicContext.walletConnector.getPublicClient();
+    const connector = dynamicContext.walletConnector;
+    if (!connector) return;
 
-    const result = await publicClient.readContract({
-      address: marketplaceContract_ADDRESS,
-      abi: marketplaceContract_ABI,
-      functionName: "nextAdId",
-      args: [],
-    });
-    console.log(result);
-    return result;
+    if (isZeroDevConnector(connector)) {
+      const signerConnector = connector.getEOAConnector();
+      if (!signerConnector) return;
+
+      const publicClient: any = await signerConnector.getPublicClient();
+
+      const result = await readContract(publicClient, {
+        address: marketplaceContract_ADDRESS,
+        abi: marketplaceContract_ABI,
+        functionName: "nextAdId",
+        args: [],
+      });
+      console.log(result);
+      return result;
+    } else {
+      const publicClient: any = await connector.getPublicClient();
+      const result = await publicClient.readContract({
+        address: marketplaceContract_ADDRESS,
+        abi: marketplaceContract_ABI,
+        functionName: "nextAdId",
+        args: [],
+      });
+      console.log(result);
+      return result;
+    }
   };
 
   const [balance, setBalance] = useState<bigint | undefined>(undefined);
@@ -199,7 +245,7 @@ export const useApi: () => UseApi = () => {
       (await dynamicContext.walletConnector.getWalletClient(
         chain_ID.toString()
       )) as WalletClient;
-    const account = await dynamicContext.walletConnector.getAddress();
+    const account = await dynamicContext.primaryWallet.address;
 
     // Request approval for amount
     const { request } = await publicClient.simulateContract({
@@ -265,7 +311,7 @@ export const useApi: () => UseApi = () => {
         (await dynamicContext.walletConnector.getWalletClient(
             chain_ID.toString()
         )) as WalletClient;
-    const account = await dynamicContext.walletConnector.getAddress();
+    const account = await dynamicContext.primaryWallet.address;
 
     const { request } = await publicClient.simulateContract({
       // @ts-ignore

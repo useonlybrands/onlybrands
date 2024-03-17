@@ -128,7 +128,7 @@ const Register = () => {
               username: user.username,
               name: values.name,
               email: values.email,
-              wallet: await dynamicContext.walletConnector.getAddress(),
+              wallet: await dynamicContext.primaryWallet.address,
               platform: values.platform[0].id,
               industries: values.industries[0].id,
               sex: values.gender,
@@ -141,7 +141,7 @@ const Register = () => {
           ? {
               name: user.username,
               email: values.email,
-              wallet: await dynamicContext.walletConnector.getAddress(),
+              wallet: await dynamicContext.primaryWallet.address,
               industries: values.industries,
               size: values.size,
               description: values.description,
