@@ -23,6 +23,7 @@ import {
 } from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import { readContract } from "viem/actions";
+import { ISuccessResult } from "@worldcoin/idkit/*";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
@@ -85,6 +86,10 @@ export interface CheckUsername {
 export type BidStatus = "";
 
 export interface UseApi {
+  updateProfileWithWorldcoin: (
+    username: string,
+    worldcoinResult: ISuccessResult
+  ) => Promise<boolean>;
   isOnboarded: (username: string) => Promise<any>;
   user: UserProfile;
   dynamicContext: UseDynamicContext;
@@ -342,11 +347,11 @@ export const useApi: () => UseApi = () => {
     const bidId = bid.id;
     if (!dynamicContext.walletConnector) return;
     const publicClient: PublicClient =
-        (await dynamicContext.walletConnector.getPublicClient()) as PublicClient;
+      (await dynamicContext.walletConnector.getPublicClient()) as PublicClient;
     const walletClient: WalletClient =
-        (await dynamicContext.walletConnector.getWalletClient(
-            chain_ID.toString()
-        )) as WalletClient;
+      (await dynamicContext.walletConnector.getWalletClient(
+        chain_ID.toString()
+      )) as WalletClient;
     const account = await dynamicContext.primaryWallet.address;
 
     const { request } = await publicClient.simulateContract({
@@ -374,7 +379,7 @@ export const useApi: () => UseApi = () => {
     );
 
     fetchBids();
-  }
+  };
 
   const fetchBids = async () => {
     const bidsRes = await authFetch(`/bid`, dynamicContext.authToken);
@@ -415,6 +420,32 @@ export const useApi: () => UseApi = () => {
     }
   };
 
+  const updateProfileWithWorldcoin = async (
+    username: string,
+    worldcoinResult: ISuccessResult
+  ) => {
+    try {
+      const response = await authFetch(
+        `/influencers/${username}/${worldcoinResult}`,
+        dynamicContext.authToken,
+        {
+          headers: {
+            Authorization: `Bearer ${dynamicContext.authToken}`,
+          },
+          method: "POST",
+        }
+      );
+
+      const data = await response.json();
+      const isUpdated = data.update_influencers?.returning.length > 0;
+
+      return isUpdated;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  };
+
   return {
     user: dynamicContext.user,
     dynamicContext,
@@ -430,5 +461,6 @@ export const useApi: () => UseApi = () => {
     balance,
     submitBid,
     isOnboarded,
+    updateProfileWithWorldcoin,
   };
 };
