@@ -24,7 +24,7 @@ import {
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import { readContract } from "viem/actions";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+const API_BASE_URL = process.env.ONRENDER_API || "";
 
 type AuthFetch = (
   url: string,
@@ -37,7 +37,6 @@ const authFetch: AuthFetch = (url, authToken, init = undefined) => {
     headers: {
       ...(init?.headers || {}),
       Authorization: `Bearer ${authToken}`,
-      "X-hasura-admin-secret": process.env.NEXT_PUBLIC_HASURA_ADMIN_SECRET,
       "Content-Type": "application/json",
     },
   });
@@ -127,21 +126,14 @@ export const useApi: () => UseApi = () => {
     console.log("profile:", profile);
     switch (profile.profileType) {
       case ROLES.BRAND:
-        return authFetch("/brand", dynamicContext.authToken, {
-          headers: {
-            Authorization: `Bearer ${dynamicContext.authToken}`,
-          },
-          method: "POST",
-          body: JSON.stringify({
-            object: profile.brandInfo,
-          }),
+        return authFetch("/create_or_update_brand", dynamicContext.authToken, {
+          method: "PUT",
+          body: JSON.stringify(profile.brandInfo),
         });
       case ROLES.INFLUENCER:
-        return authFetch("/influencers", dynamicContext.authToken, {
-          method: "POST",
-          body: JSON.stringify({
-            object: profile.influencerInfo,
-          }),
+        return authFetch("/create_or_update_influencer", dynamicContext.authToken, {
+          method: "PUT",
+          body: JSON.stringify(profile.influencerInfo),
         });
     }
   };
@@ -280,8 +272,8 @@ export const useApi: () => UseApi = () => {
 
     console.log("Notifying backend of new bid");
 
-    await authFetch("/bid", dynamicContext.authToken, {
-      method: "POST",
+    await authFetch("/create_or_update_bid", dynamicContext.authToken, {
+      method: "PUT",
       body: JSONBig({ useNativeBigInt: true }).stringify({
         object: {
           // influencer_wallet: bidInfo.influencerWallet,
@@ -327,14 +319,10 @@ export const useApi: () => UseApi = () => {
       hash: acceptOfferHash,
     });
 
-    await authFetch("/bid", dynamicContext.authToken, {
-        method: "POST",
-        body: JSONBig({ useNativeBigInt: true }).stringify({
-          ...bid,
-          status: "accepted"
-        })
-      }
-    );
+    await authFetch(`/accept_bid/${bid.id}`, dynamicContext.authToken, {
+      method: "POST",
+      body: JSONBig({ useNativeBigInt: true }).stringify(bid)
+    });
   };
 
   const startSettlement = async (bid: BidInfo, url: string) => {
@@ -363,25 +351,21 @@ export const useApi: () => UseApi = () => {
       hash: acceptOfferHash,
     });
 
-    await authFetch("/bid", dynamicContext.authToken, {
-          method: "POST",
-          body: JSONBig({ useNativeBigInt: true }).stringify({
-            ...bid,
-            status: "completed"
-          })
-        }
-    );
+    await authFetch("/complete_bid", dynamicContext.authToken, {
+      method: "POST",
+      body: JSONBig({ useNativeBigInt: true }).stringify(bid)
+    });
   }
 
   const fetchBids = async () => {
-    const bidsRes = await authFetch(`/bid`, dynamicContext.authToken);
+    const bidsRes = await authFetch(`/all_bids`, dynamicContext.authToken);
     const bids = await bidsRes.json();
     return bids.bid;
   };
 
   const fetchInfluencers = async () => {
     const influencersRes = await authFetch(
-      `/influencers`,
+      `/all_influencers`,
       dynamicContext.authToken
     );
     const influencers = await influencersRes.json();
@@ -391,14 +375,8 @@ export const useApi: () => UseApi = () => {
   const isOnboarded = async (username: string) => {
     try {
       const response = await authFetch(
-        `/check-username/${username}`,
-        dynamicContext.authToken,
-        {
-          headers: {
-            Authorization: `Bearer ${dynamicContext.authToken}`,
-          },
-          method: "GET",
-        }
+        `/user/${username}`,
+        dynamicContext.authToken
       );
 
       const data = await response.json();
@@ -406,7 +384,7 @@ export const useApi: () => UseApi = () => {
       const isInfluencerExist = data.influencers?.length > 0;
 
       return isBrandExist || isInfluencerExist;
-    } catch (e) {
+   } catch (e) {
       console.error(e);
       return false;
     }
