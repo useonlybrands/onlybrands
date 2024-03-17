@@ -11,7 +11,7 @@ import {
 } from "@/constants/contracts";
 import { PublicClient, WalletClient } from "viem";
 import { Influencer } from "@/components/Influencers/JobsItem/types";
-import JSONBig from 'json-bigint';
+import JSONBig from "json-bigint";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
@@ -63,7 +63,7 @@ export interface BidInfo {
   // onchainId: bigint;
 }
 
-export type BidStatus = ""
+export type BidStatus = "";
 
 export interface UseApi {
   // TODO: check in database if user is registered (isRegistered endpoint)
@@ -158,7 +158,8 @@ export const useApi: () => UseApi = () => {
 
   const fetchNextAdId = async () => {
     if (!dynamicContext.walletConnector) return;
-    const publicClient = await dynamicContext.walletConnector.getPublicClient();
+    const publicClient: any =
+      await dynamicContext.walletConnector.getPublicClient();
 
     const result = await publicClient.readContract({
       address: marketplaceContract_ADDRESS,
@@ -168,14 +169,14 @@ export const useApi: () => UseApi = () => {
     });
     console.log(result);
     return result;
-  }
+  };
 
   const [balance, setBalance] = useState<bigint | undefined>(undefined);
 
   useEffect(() => {
     fetchBalance().then((balance) => {
       setBalance(balance as bigint);
-      fetchNextAdId().then(adid => console.log(`Ad ID: ${adid}`))
+      fetchNextAdId().then((adid) => console.log(`Ad ID: ${adid}`));
     });
   }, [dynamicContext.walletConnector]);
   const submitBid = async (bidInfo: BidInfo) => {
@@ -222,11 +223,11 @@ export const useApi: () => UseApi = () => {
       hash: approvalHash,
     });
 
-    console.log("Notifying backend of new bid")
+    console.log("Notifying backend of new bid");
 
     await authFetch("/bid", dynamicContext.authToken, {
       method: "POST",
-      body: JSONBig({useNativeBigInt: true}).stringify({
+      body: JSONBig({ useNativeBigInt: true }).stringify({
         object: {
           influencer_wallet: bidInfo.influencerWallet,
           influencer_username: bidInfo.influencerUsername,
@@ -237,17 +238,15 @@ export const useApi: () => UseApi = () => {
           description: bidInfo.description,
           impressions: bidInfo.impressions,
           status: bidInfo.status,
-          id: nextAdId
-        }
+          id: nextAdId,
+        },
       }),
     });
 
     fetchBalance();
   };
 
-  const acceptOffer = (onchainId: bigint) => {
-
-  }
+  const acceptOffer = (onchainId: bigint) => {};
 
   return {
     user: dynamicContext.user,
