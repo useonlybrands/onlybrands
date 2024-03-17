@@ -14,3 +14,7 @@ Add the necessary environment variables
 <p>We welcome contributions to Entry Level! If you have an idea for a new feature or have found a bug, please open an issue or submit a pull request.</p>
 <h2>License</h2>
 <p>This project is licensed under the MIT License - see the <a href="https://github.com/ryarturogi/entry-level/blob/master/LICENSE">LICENSE</a> file for details.</p>
+
+
+https://dashboard.zerodev.app/paymasters
+https://docs.dynamic.xyz/aa-providers/zerodev
