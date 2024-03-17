@@ -25,8 +25,15 @@ async function deployMarketplace() {
     ${_source}
     
     `)
-    const _tokenContract = '0x5B557183636e4b72F05721036F3655af5885f282' // its hardcoded for now woops 
-    console.log(`using $ONLY at ${_tokenContract}. its' hardcoded, woops.`)
+
+    let _tokenContract;
+    if(network.name == 'spicy') {
+        _tokenContract = '0xD2A1a753C056aDd5165881DA7eA243D4eDf78A96';
+    }
+    if(network.name == 'arbitrumSepolia') {
+        _tokenContract = '0x5B557183636e4b72F05721036F3655af5885f282' // its hardcoded for now woops 
+    }
+    console.log(`using $ONLY at ${_tokenContract}.`)
 
     const Marketplace = await marketplaceFactory.deploy(
         _router, 
@@ -43,7 +50,7 @@ async function deployMarketplace() {
 
     console.log(`Marketplace deployed to ${Marketplace.address} on ${network.name}`)
 
-    if (process.env.ARBISCAN_API_KEY) {
+    if (network.name == 'arbitrumSepolia') {
         console.log("Verifying contract on ARBISCAN...")
         await run("verify:verify", {
             address: Marketplace.address,
@@ -56,6 +63,14 @@ async function deployMarketplace() {
             contract: "contracts/Marketplace.sol:Marketplace"
         })
         console.log("Contract verification completed.")
+    }
+    if(network.name == 'spicy') {
+        console.log("Verifying contract on SPICY...")
+        await run("verify:verify", {
+            address: OnlyToken.address,
+            constructorArguments: [],
+            contract: "contracts/OnlyToken.sol:OnlyToken"
+        })
     }
 }
 
