@@ -97,7 +97,14 @@ module.exports = {
             url: 'https://public.stackup.sh/api/v1/node/arbitrum-sepolia',
             accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
             chainId: 421614            
-        }
+        },
+        spicy: {
+            url: 'https://spicy-rpc.chiliz.com/',
+            accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
+            chainId: 88882,
+            currencySymbol: 'CHZ',
+            blockExplorer: 'https://testnet.chiliscan.com/',
+        },
     },
     defaultNetwork: "hardhat",
     etherscan: {
@@ -111,6 +118,7 @@ module.exports = {
             arbitrumOne: ARBISCAN_API_KEY,
             // arbitrumGoerli: ARBISCAN_API_KEY,
             arbitrumSepolia: ARBISCAN_API_KEY,
+            spicy: ARBISCAN_API_KEY,
             
         },
         customChains: [
@@ -121,7 +129,15 @@ module.exports = {
                 apiURL: "https://api-sepolia.arbiscan.io/api",      
                 browserURL: "https://sepolia.arbiscan.io/"
               }
-            }
+            },
+            {
+                network: "spicy",
+                chainId: 88882,
+                urls: {
+                  apiURL: "https://api.routescan.io/v2/network/mainnet/evm/88888/etherscan",
+                  browserURL: "https://testnet.chiliscan.com"
+                }
+              }
           ]
         
     },

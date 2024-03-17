@@ -3,11 +3,12 @@ import { useDynamicContext, UserProfile } from "@dynamic-labs/sdk-react-core";
 import { useEffect, useState } from "react";
 import { UseDynamicContext } from "@dynamic-labs/sdk-react-core/src/lib/context/DynamicContext/useDynamicContext";
 import {
-  chain_ID,
   marketplaceContract_ABI,
-  marketplaceContract_ADDRESS,
+  // marketplaceContract_ADDRESS,
+  marketplaceContractAddresses,
   onlyContract_ABI,
-  onlyContract_ADDRESS,
+  // onlyContract_ADDRESS,
+  onlyContractAddresses,
 } from "@/constants/contracts";
 import { PublicClient, WalletClient } from "viem";
 import { Influencer } from "@/components/Influencers/JobsItem/types";
@@ -175,7 +176,7 @@ export const useApi: () => UseApi = () => {
       const publicClient: any = await signerConnector.getPublicClient();
 
       const result = await readContract(publicClient, {
-        address: onlyContract_ADDRESS,
+        address: onlyContractAddresses[dynamicContext.network],
         abi: onlyContract_ABI,
         functionName: "balanceOf",
         args: [await dynamicContext.primaryWallet.address],
@@ -185,7 +186,7 @@ export const useApi: () => UseApi = () => {
     } else {
       const publicClient: any = await connector.getPublicClient();
       const result = await publicClient.readContract({
-        address: onlyContract_ADDRESS,
+        address: onlyContractAddresses[dynamicContext.network],
         abi: onlyContract_ABI,
         functionName: "balanceOf",
         args: [await connector.fetchPublicAddress()],
@@ -206,7 +207,7 @@ export const useApi: () => UseApi = () => {
       const publicClient: any = await signerConnector.getPublicClient();
 
       const result = await readContract(publicClient, {
-        address: marketplaceContract_ADDRESS,
+        address: marketplaceContractAddresses[dynamicContext.network],
         abi: marketplaceContract_ABI,
         functionName: "nextAdId",
         args: [],
@@ -216,7 +217,7 @@ export const useApi: () => UseApi = () => {
     } else {
       const publicClient: any = await connector.getPublicClient();
       const result = await publicClient.readContract({
-        address: marketplaceContract_ADDRESS,
+        address: marketplaceContractAddresses[dynamicContext.network],
         abi: marketplaceContract_ABI,
         functionName: "nextAdId",
         args: [],
@@ -240,7 +241,7 @@ export const useApi: () => UseApi = () => {
       (await dynamicContext.walletConnector.getPublicClient()) as PublicClient;
     const walletClient: WalletClient =
       (await dynamicContext.walletConnector.getWalletClient(
-        chain_ID.toString()
+        dynamicContext.network.toString()
       )) as WalletClient;
     const account = await dynamicContext.primaryWallet.address;
 
@@ -248,10 +249,10 @@ export const useApi: () => UseApi = () => {
     const { request } = await publicClient.simulateContract({
       // @ts-ignore
       account,
-      address: onlyContract_ADDRESS,
+      address: onlyContractAddresses[dynamicContext.network],
       abi: onlyContract_ABI,
       functionName: "approve",
-      args: [marketplaceContract_ADDRESS, bidInfo.budget],
+      args: [marketplaceContractAddresses[dynamicContext.network], bidInfo.budget],
     });
     console.log(request);
     const approvalHash = await walletClient.writeContract(request);
@@ -263,7 +264,7 @@ export const useApi: () => UseApi = () => {
     const { request: createOfferReq } = await publicClient.simulateContract({
       // @ts-ignore
       account,
-      address: marketplaceContract_ADDRESS,
+      address: marketplaceContractAddresses[dynamicContext.network],
       abi: marketplaceContract_ABI,
       functionName: "createOffer",
       args: [bidInfo.influencerWallet, bidInfo.impressions, bidInfo.budget],
@@ -307,14 +308,14 @@ export const useApi: () => UseApi = () => {
       (await dynamicContext.walletConnector.getPublicClient()) as PublicClient;
     const walletClient: WalletClient =
       (await dynamicContext.walletConnector.getWalletClient(
-        chain_ID.toString()
+        dynamicContext.network.toString()
       )) as WalletClient;
     const account = await dynamicContext.primaryWallet.address;
 
     const { request } = await publicClient.simulateContract({
       // @ts-ignore
       account,
-      address: marketplaceContract_ADDRESS,
+      address: marketplaceContractAddresses[dynamicContext.network],
       abi: marketplaceContract_ABI,
       functionName: "acceptOffer",
       args: [bidId],
@@ -345,14 +346,14 @@ export const useApi: () => UseApi = () => {
         (await dynamicContext.walletConnector.getPublicClient()) as PublicClient;
     const walletClient: WalletClient =
         (await dynamicContext.walletConnector.getWalletClient(
-            chain_ID.toString()
+          dynamicContext.network.toString()
         )) as WalletClient;
     const account = await dynamicContext.primaryWallet.address;
 
     const { request } = await publicClient.simulateContract({
       // @ts-ignore
       account,
-      address: marketplaceContract_ADDRESS,
+      address: marketplaceContractAddresses[dynamicContext.network],
       abi: marketplaceContract_ABI,
       functionName: "startSettlement",
       args: [bidId.toString(), url],

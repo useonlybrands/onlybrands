@@ -509,3 +509,10 @@ use remix to see the functoin consuemr
 
 npx hardhat call-function --contract 0xdAc6703d3dd8B4dCb769A44707CEEF2297Df4f8c
 where 0xda is the contract address on arbitrum sepolia 
+
+
+-- we like this ---
+https://github.com/bshevchenko/updev/blob/main/packages/hardhat/contracts/upDevFunctionsConsumer.sol
+
+https://ethglobal.com/events/london2024/prizes#chiliz
+https://ethglobal.com/events/london2024/prizes#celo

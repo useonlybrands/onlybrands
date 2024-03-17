@@ -19,7 +19,7 @@ async function deployOnly() {
 
     console.log(`OnlyToken deployed to ${OnlyToken.address} on ${network.name}`)
 
-    if (process.env.ARBISCAN_API_KEY) {
+    if (network.name == "arbitrumSepolia") {
         console.log("Verifying contract on ARBISCAN...")
         await run("verify:verify", {
             address: OnlyToken.address,
@@ -27,6 +27,14 @@ async function deployOnly() {
             contract: "contracts/OnlyToken.sol:OnlyToken"
         })
         console.log("Contract verification completed.")
+    }
+    if(network.name == 'spicy') {
+        console.log("Verifying contract on SPICY...")
+        await run("verify:verify", {
+            address: OnlyToken.address,
+            constructorArguments: [],
+            contract: "contracts/OnlyToken.sol:OnlyToken"
+        })
     }
 }
 
