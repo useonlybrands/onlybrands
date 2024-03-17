@@ -126,12 +126,12 @@ export const useApi: () => UseApi = () => {
     console.log("profile:", profile);
     switch (profile.profileType) {
       case ROLES.BRAND:
-        return authFetch("/create_or_update_brand", dynamicContext.authToken, {
+        return authFetch("/create_or_update_brand/", dynamicContext.authToken, {
           method: "PUT",
           body: JSON.stringify(profile.brandInfo),
         });
       case ROLES.INFLUENCER:
-        return authFetch("/create_or_update_influencer", dynamicContext.authToken, {
+        return authFetch("/create_or_update_influencer/", dynamicContext.authToken, {
           method: "PUT",
           body: JSON.stringify(profile.influencerInfo),
         });
@@ -271,7 +271,7 @@ export const useApi: () => UseApi = () => {
 
     console.log("Notifying backend of new bid");
 
-    await authFetch("/create_or_update_bid", dynamicContext.authToken, {
+    await authFetch("/create_or_update_bid/", dynamicContext.authToken, {
       method: "PUT",
       body: JSONBig({ useNativeBigInt: true }).stringify({
         object: {
@@ -318,7 +318,7 @@ export const useApi: () => UseApi = () => {
       hash: acceptOfferHash,
     });
 
-    await authFetch(`/accept_bid/${bid.id}`, dynamicContext.authToken, {
+    await authFetch(`/accept_bid/${bid.id}/`, dynamicContext.authToken, {
       method: "POST",
       body: JSONBig({ useNativeBigInt: true }).stringify(bid)
     });
@@ -349,8 +349,8 @@ export const useApi: () => UseApi = () => {
     await publicClient.waitForTransactionReceipt({
       hash: acceptOfferHash,
     });
-    
-    await authFetch("/complete_bid", dynamicContext.authToken, {
+
+    await authFetch("/complete_bid/", dynamicContext.authToken, {
       method: "POST",
       body: JSONBig({ useNativeBigInt: true }).stringify(bid)
     });
@@ -364,7 +364,7 @@ export const useApi: () => UseApi = () => {
 
   const fetchInfluencers = async () => {
     const influencersRes = await authFetch(
-      `/all_influencers`,
+      `/all_influencers/`,
       dynamicContext.authToken
     );
     const influencers = await influencersRes.json();
