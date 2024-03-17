@@ -24,7 +24,7 @@ const InfluencerActions: React.FC<IProps> = ({influencer}) => {
                 influencerUsername: influencer.username,
                 brandUsername: user.username,
                 brandWallet: await dynamicContext.walletConnector.getAddress(),
-                impressions: influencer.followerCount,
+                impressions: influencer.followerCount || 50000,
                 status: "pending",
                 title: "Example demo",
                 description: "Please show abc in pic"

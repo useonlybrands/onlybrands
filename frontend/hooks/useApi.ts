@@ -228,7 +228,7 @@ export const useApi: () => UseApi = () => {
       method: "POST",
       body: JSONBig({useNativeBigInt: true}).stringify({
         object: {
-          influencer_wallet: bidInfo.influencerWallet,
+          // influencer_wallet: bidInfo.influencerWallet,
           influencer_username: bidInfo.influencerUsername,
           brand_wallet: bidInfo.brandWallet,
           brand_username: bidInfo.brandUsername,
