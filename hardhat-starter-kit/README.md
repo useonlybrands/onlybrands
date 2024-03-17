@@ -496,6 +496,10 @@ npx hardhat run scripts/deployment/deployMarketplace.js --network arbitrumSepoli
 * Note- it uses hardcoded erc20  addr for now * 
 
 
+
+#### settle up manually 
+npx hardhat settle-up --ad-id 1 --views 1000 --marketplace 0x22bF3c1bF4D4b5508Eb2AF99bBE565F7e2375DCb # chiliz spicy
+
 ---
 old 
 
@@ -509,3 +513,16 @@ use remix to see the functoin consuemr
 
 npx hardhat call-function --contract 0xdAc6703d3dd8B4dCb769A44707CEEF2297Df4f8c
 where 0xda is the contract address on arbitrum sepolia 
+
+
+-- we like this ---
+https://github.com/bshevchenko/updev/blob/main/packages/hardhat/contracts/upDevFunctionsConsumer.sol
+
+https://ethglobal.com/events/london2024/prizes#chiliz
+https://ethglobal.com/events/london2024/prizes#celo
+
+
+CHILIZ DOESNT SHUPPORT ACCOUNT ASBTRICTION DYNAMIC 
+```
+npx hardhat settle-up --ad-id 2 --views 23 --marketplace 0x22bF3c1bF4D4b5508Eb2AF99bBE565F7e2375DCb --network spicy
+```
