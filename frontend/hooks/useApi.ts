@@ -58,7 +58,10 @@ export interface BidInfo {
   // ... other fields
   budget: number;
   impressions: number;
+  onchainId: bigint;
 }
+
+export type BidStatus = ""
 
 export interface UseApi {
   // TODO: check in database if user is registered (isRegistered endpoint)
@@ -110,9 +113,6 @@ export const useApi: () => UseApi = () => {
         });
       case ROLES.INFLUENCER:
         return authFetch("/influencers", dynamicContext.authToken, {
-          headers: {
-            Authorization: `Bearer ${dynamicContext.authToken}`,
-          },
           method: "POST",
           body: JSON.stringify({
             object: profile.influencerInfo
@@ -153,13 +153,28 @@ export const useApi: () => UseApi = () => {
     return result;
   };
 
+  const fetchNextAdId = async () => {
+    if (!dynamicContext.walletConnector) return;
+    const publicClient = await dynamicContext.walletConnector.getPublicClient();
+
+    const result = await publicClient.readContract({
+      address: marketplaceContract_ADDRESS,
+      abi: marketplaceContract_ABI,
+      functionName: "nextAdId",
+      args: [],
+    });
+    console.log(result);
+    return result;
+  }
+
   const [balance, setBalance] = useState<bigint | undefined>(undefined);
 
   useEffect(() => {
     fetchBalance().then((balance) => {
       setBalance(balance as bigint);
+      fetchNextAdId().then(adid => console.log(`Ad ID: ${adid}`))
     });
-  }, [dynamicContext]);
+  }, [dynamicContext.isFullyConnected]);
 
   const submitBid = async (bidInfo: BidInfo) => {
     if (!dynamicContext.walletConnector) return;
@@ -196,13 +211,30 @@ export const useApi: () => UseApi = () => {
       args: [bidInfo.influencerWallet, bidInfo.impressions, bidInfo.budget],
     });
     console.log(createOfferReq);
+
+    const nextAdId = await fetchNextAdId();
+
     const createOfferHash = await walletClient.writeContract(createOfferReq);
     await publicClient.waitForTransactionReceipt({
       hash: approvalHash,
     });
 
+    await authFetch("/bid", dynamicContext.authToken, {
+      method: "POST",
+      body: JSON.stringify({
+        object: {
+          ...bidInfo,
+          id: nextAdId
+        }
+      }),
+    });
+
     fetchBalance();
   };
+
+  const acceptOffer = (onchainId: bigint) => {
+
+  }
 
   return {
     user: dynamicContext.user,
