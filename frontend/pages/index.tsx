@@ -62,12 +62,17 @@ const Home = (): React.ReactElement => {
   // });
 
   useEffect(() => {
-    if (user?.username) {
-      const data = isOnboarded(user.username);
-      if (!data) {
-        router.push("/register");
+    const fetchData = async () => {
+      if (user?.username) {
+        const data = await isOnboarded(user.username);
+        console.log(data, "data onboard");
+        if (!data) {
+          router.push("/register");
+        }
       }
-    }
+    };
+
+    fetchData();
   }, [user]);
 
   return (
