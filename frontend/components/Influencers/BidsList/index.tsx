@@ -4,6 +4,7 @@ import InfluencerContent from "@/components/Influencers/JobsItem/InfluencerConte
 import InfluencerActions from "@/components/Influencers/JobsItem/InfluencerActions";
 import {BidInfo} from "@/hooks/useApi";
 import JobCardItem from "@/components/Influencers/JobsItem";
+import BidActions from "@/components/Influencers/BidsList/BidActions";
 
 interface IProps {
     bids: BidInfo[]
@@ -39,7 +40,7 @@ const BidsItem: FC<{bid: BidInfo}> = ({bid}) => {
 const BidsList: FC<IProps> = ({bids}) => {
     return (
         <section
-            className="relative flex flex-col items-center justify-center col-span-12 mx-auto max-w-8xl sm:col-span-8">
+            className="relative flex flex-col items-center justify-center col-span-12 mx-auto max-w-8xl sm:col-span-8 mt-2">
             <ul className="grid w-full grid-cols-1 gap-5 h-fit">
                 {bids?.length > 0 &&
                     bids.map((bid) => {

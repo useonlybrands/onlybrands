@@ -11,6 +11,8 @@ import {
 } from "@/constants/contracts";
 import { PublicClient, WalletClient } from "viem";
 import { Influencer } from "@/components/Influencers/JobsItem/types";
+import JSONBig from 'json-bigint';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 type AuthFetch = (
@@ -56,9 +58,9 @@ export interface BidInfo {
   description: string;
   status: string;
   // ... other fields
-  budget: number;
+  budget: bigint;
   impressions: number;
-  onchainId: bigint;
+  // onchainId: bigint;
 }
 
 export type BidStatus = ""
@@ -175,9 +177,9 @@ export const useApi: () => UseApi = () => {
       setBalance(balance as bigint);
       fetchNextAdId().then(adid => console.log(`Ad ID: ${adid}`))
     });
-  }, [dynamicContext.isFullyConnected]);
-
+  }, [dynamicContext.walletConnector]);
   const submitBid = async (bidInfo: BidInfo) => {
+    console.log("Submitting bid", bidInfo);
     if (!dynamicContext.walletConnector) return;
     const publicClient: PublicClient =
       (await dynamicContext.walletConnector.getPublicClient()) as PublicClient;
@@ -220,11 +222,21 @@ export const useApi: () => UseApi = () => {
       hash: approvalHash,
     });
 
+    console.log("Notifying backend of new bid")
+
     await authFetch("/bid", dynamicContext.authToken, {
       method: "POST",
-      body: JSON.stringify({
+      body: JSONBig({useNativeBigInt: true}).stringify({
         object: {
-          ...bidInfo,
+          influencer_wallet: bidInfo.influencerWallet,
+          influencer_username: bidInfo.influencerUsername,
+          brand_wallet: bidInfo.brandWallet,
+          brand_username: bidInfo.brandUsername,
+          budget: bidInfo.budget,
+          title: bidInfo.title,
+          description: bidInfo.description,
+          impressions: bidInfo.impressions,
+          status: bidInfo.status,
           id: nextAdId
         }
       }),
