@@ -70,40 +70,40 @@ const JobsByCompany = ({ jobs, error }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  const { company } = params;
-
-  try {
-    const { data: fetchCompanyJobs, error } = await ClientApi.getJobs({
-      contentType: 'companySlug',
-      query: company,
-    });
-
-    if (error) {
-      return {
-        props: {
-          jobs: [],
-          error: error?.message || 'Server error occurred',
-        },
-      };
-    }
-
-    return {
-      props: {
-        jobs: fetchCompanyJobs || [],
-
-        error: false,
-      },
-    };
-  } catch (error) {
-    return {
-      props: {
-        jobs: [],
-        error: error?.response?.data?.message || error.message,
-      },
-    };
-  }
-};
+// export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+//   const { company } = params;
+//
+//   try {
+//     const { data: fetchCompanyJobs, error } = await ClientApi.getJobs({
+//       contentType: 'companySlug',
+//       query: company,
+//     });
+//
+//     if (error) {
+//       return {
+//         props: {
+//           jobs: [],
+//           error: error?.message || 'Server error occurred',
+//         },
+//       };
+//     }
+//
+//     return {
+//       props: {
+//         jobs: fetchCompanyJobs || [],
+//
+//         error: false,
+//       },
+//     };
+//   } catch (error) {
+//     return {
+//       props: {
+//         jobs: [],
+//         error: error?.response?.data?.message || error.message,
+//       },
+//     };
+//   }
+// };
 
 JobsByCompany.propTypes = {
   jobs: PropTypes.arrayOf(

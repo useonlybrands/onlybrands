@@ -23,7 +23,7 @@ import {
 } from '@/constants/new-job';
 import useCountries from '@/hooks/useCountries';
 import useSkills from '@/hooks/useSkills';
-import ClientApi from '@/utils/initDatabase';
+// import ClientApi from '@/utils/initDatabase';
 import {
   BriefcaseIcon,
   BuildingOffice2Icon,
@@ -34,7 +34,7 @@ import { ArrowPathIcon } from '@heroicons/react/24/solid';
 import { Formik } from 'formik';
 import { useRouter } from 'next/router';
 import * as Yup from 'yup';
-
+const ClientApi = {}
 const NewJob = () => {
   const router = useRouter();
   const allSkills = useSkills();

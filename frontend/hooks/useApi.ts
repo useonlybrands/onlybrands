@@ -11,6 +11,8 @@ import {
 } from "@/constants/contracts";
 import { PublicClient, WalletClient } from "viem";
 import { Influencer } from "@/components/Influencers/JobsItem/types";
+import JSONBig from 'json-bigint';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 type AuthFetch = (
@@ -56,9 +58,12 @@ export interface BidInfo {
   description: string;
   status: string;
   // ... other fields
-  budget: number;
+  budget: bigint;
   impressions: number;
+  // onchainId: bigint;
 }
+
+export type BidStatus = ""
 
 export interface UseApi {
   // TODO: check in database if user is registered (isRegistered endpoint)
@@ -110,9 +115,6 @@ export const useApi: () => UseApi = () => {
         });
       case ROLES.INFLUENCER:
         return authFetch("/influencers", dynamicContext.authToken, {
-          headers: {
-            Authorization: `Bearer ${dynamicContext.authToken}`,
-          },
           method: "POST",
           body: JSON.stringify({
             object: profile.influencerInfo,
@@ -154,15 +156,30 @@ export const useApi: () => UseApi = () => {
     return result;
   };
 
+  const fetchNextAdId = async () => {
+    if (!dynamicContext.walletConnector) return;
+    const publicClient = await dynamicContext.walletConnector.getPublicClient();
+
+    const result = await publicClient.readContract({
+      address: marketplaceContract_ADDRESS,
+      abi: marketplaceContract_ABI,
+      functionName: "nextAdId",
+      args: [],
+    });
+    console.log(result);
+    return result;
+  }
+
   const [balance, setBalance] = useState<bigint | undefined>(undefined);
 
   useEffect(() => {
     fetchBalance().then((balance) => {
       setBalance(balance as bigint);
+      fetchNextAdId().then(adid => console.log(`Ad ID: ${adid}`))
     });
-  }, [dynamicContext]);
-
+  }, [dynamicContext.walletConnector]);
   const submitBid = async (bidInfo: BidInfo) => {
+    console.log("Submitting bid", bidInfo);
     if (!dynamicContext.walletConnector) return;
     const publicClient: PublicClient =
       (await dynamicContext.walletConnector.getPublicClient()) as PublicClient;
@@ -197,13 +214,40 @@ export const useApi: () => UseApi = () => {
       args: [bidInfo.influencerWallet, bidInfo.impressions, bidInfo.budget],
     });
     console.log(createOfferReq);
+
+    const nextAdId = await fetchNextAdId();
+
     const createOfferHash = await walletClient.writeContract(createOfferReq);
     await publicClient.waitForTransactionReceipt({
       hash: approvalHash,
     });
 
+    console.log("Notifying backend of new bid")
+
+    await authFetch("/bid", dynamicContext.authToken, {
+      method: "POST",
+      body: JSONBig({useNativeBigInt: true}).stringify({
+        object: {
+          influencer_wallet: bidInfo.influencerWallet,
+          influencer_username: bidInfo.influencerUsername,
+          brand_wallet: bidInfo.brandWallet,
+          brand_username: bidInfo.brandUsername,
+          budget: bidInfo.budget,
+          title: bidInfo.title,
+          description: bidInfo.description,
+          impressions: bidInfo.impressions,
+          status: bidInfo.status,
+          id: nextAdId
+        }
+      }),
+    });
+
     fetchBalance();
   };
+
+  const acceptOffer = (onchainId: bigint) => {
+
+  }
 
   return {
     user: dynamicContext.user,

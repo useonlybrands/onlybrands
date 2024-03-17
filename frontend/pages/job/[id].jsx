@@ -1,10 +1,10 @@
 import JobCard from '@/components/Job';
 import Loader from '@/components/UI/Loader';
 import Head from '@/components/partials/Head';
-import ClientApi from '@/utils/initDatabase';
+// import ClientApi from '@/utils/initDatabase';
 import Image from 'next/image';
 import PropTypes from 'prop-types';
-
+const ClientApi = {}
 const Job = ({ job, companyJobs, error }) => {
   const isLoading = !job && !error;
 
@@ -42,61 +42,61 @@ const Job = ({ job, companyJobs, error }) => {
   );
 };
 
-export const getServerSideProps = async ({ params }) => {
-  const { id } = params;
-
-  try {
-    let fetchCompanyJobs;
-    const { data: fetchJob, error: fetchJobError } = await ClientApi.getJob(id);
-
-    if (fetchJobError) {
-      return {
-        props: {
-          job: {},
-          companyJobs: [],
-          error: fetchJobError?.message || 'Server error occurred',
-        },
-      };
-    }
-
-    if (fetchJob?.companySlug) {
-      const { data, error } = await ClientApi.getJobs({
-        contentType: 'companySlug',
-        query: fetchJob.companySlug,
-      });
-
-      if (error) {
-        return {
-          props: {
-            job: {},
-            companyJobs: [],
-            error: error?.message || 'Server error occurred',
-          },
-        };
-      }
-
-      fetchCompanyJobs = data;
-
-      fetchCompanyJobs = fetchCompanyJobs.filter((job) => job.id !== fetchJob.id);
-    }
-
-    return {
-      props: {
-        job: fetchJob || {},
-        companyJobs: fetchCompanyJobs || [],
-        error: false,
-      },
-    };
-  } catch (error) {
-    return {
-      props: {
-        job: {},
-        companyJobs: [],
-        error: error?.response?.data?.message || error.message,
-      },
-    };
-  }
-};
+// export const getServerSideProps = async ({ params }) => {
+//   const { id } = params;
+//
+//   try {
+//     let fetchCompanyJobs;
+//     const { data: fetchJob, error: fetchJobError } = await ClientApi.getJob(id);
+//
+//     if (fetchJobError) {
+//       return {
+//         props: {
+//           job: {},
+//           companyJobs: [],
+//           error: fetchJobError?.message || 'Server error occurred',
+//         },
+//       };
+//     }
+//
+//     if (fetchJob?.companySlug) {
+//       const { data, error } = await ClientApi.getJobs({
+//         contentType: 'companySlug',
+//         query: fetchJob.companySlug,
+//       });
+//
+//       if (error) {
+//         return {
+//           props: {
+//             job: {},
+//             companyJobs: [],
+//             error: error?.message || 'Server error occurred',
+//           },
+//         };
+//       }
+//
+//       fetchCompanyJobs = data;
+//
+//       fetchCompanyJobs = fetchCompanyJobs.filter((job) => job.id !== fetchJob.id);
+//     }
+//
+//     return {
+//       props: {
+//         job: fetchJob || {},
+//         companyJobs: fetchCompanyJobs || [],
+//         error: false,
+//       },
+//     };
+//   } catch (error) {
+//     return {
+//       props: {
+//         job: {},
+//         companyJobs: [],
+//         error: error?.response?.data?.message || error.message,
+//       },
+//     };
+//   }
+// };
 
 Job.propTypes = {
   job: PropTypes.object.isRequired,
