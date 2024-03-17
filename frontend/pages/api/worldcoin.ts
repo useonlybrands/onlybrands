@@ -1,3 +1,4 @@
+import { useApi } from "@/hooks/useApi";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export const config = {
@@ -25,7 +26,7 @@ export default function handler(
     proof: req.body.proof,
     verification_level: req.body.verification_level,
     signal: req.body.signal,
-    action: 'sign-in-action'
+    action: "sign-in-action",
   };
   console.log("Sending request to World ID /verify endpoint:\n", reqBody);
   fetch(verifyEndpoint, {
@@ -35,7 +36,7 @@ export default function handler(
     },
     body: JSON.stringify(reqBody),
   }).then((verifyRes) => {
-    verifyRes.json().then((wldResponse) => {
+    verifyRes.json().then(async (wldResponse) => {
       console.log(
         `Received ${verifyRes.status} response from World ID /verify endpoint:\n`,
         wldResponse
@@ -47,6 +48,7 @@ export default function handler(
           "Credential verified! This user's nullifier hash is: ",
           wldResponse.nullifier_hash
         );
+
         res.status(verifyRes.status).send({
           code: "success",
           detail: "This action verified correctly!",

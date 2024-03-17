@@ -19,15 +19,31 @@ async function deployOnly() {
 
     console.log(`OnlyToken deployed to ${OnlyToken.address} on ${network.name}`)
 
-    if (process.env.ARBISCAN_API_KEY) {
-        console.log("Verifying contract on ARBISCAN...")
-        await run("verify:verify", {
-            address: OnlyToken.address,
-            constructorArguments: [],
-            contract: "contracts/OnlyToken.sol:OnlyToken"
-        })
-        console.log("Contract verification completed.")
-    }
+    // if (network.name == "arbitrumSepolia") {
+    console.log("Verifying contract on etherscan...")
+    await run("verify:verify", {
+        address: OnlyToken.address,
+        constructorArguments: [],
+        contract: "contracts/OnlyToken.sol:OnlyToken"
+    })
+    console.log("Contract verification completed.")
+    // }
+    // if(network.name == 'spicy') {
+    //     console.log("Verifying contract on SPICY...")
+    //     await run("verify:verify", {
+    //         address: OnlyToken.address,
+    //         constructorArguments: [],
+    //         contract: "contracts/OnlyToken.sol:OnlyToken"
+    //     })
+    // }
+    // if(network.name == 'celoAlfajores') {
+    //     console.log("Verifying contract on celoAlfajores...")
+    //     await run("verify:verify", {
+    //         address: OnlyToken.address,
+    //         constructorArguments: [],
+    //         contract: "contracts/OnlyToken.sol:OnlyToken"
+    //     })
+    // }
 }
 
 module.exports = {
