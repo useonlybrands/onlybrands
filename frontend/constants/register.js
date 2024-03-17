@@ -272,7 +272,7 @@ export const BrandSchemaValidation = Yup.object().shape({
   size: stringOrArray("Size"),
   brandDescription: requiredString("brand description")
     .max(2000, "Must be 2000 characters or less")
-    .min(500, "Must be 500 characters or more"),
+    .min(10, "Must be 10 characters or more"),
 });
 
 export const SCHEMAS = {

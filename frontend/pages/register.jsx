@@ -35,6 +35,12 @@ const Register = () => {
   const [initialValues, setInitialValues] = useState(INITIAL_VALUES);
   const [typesSchemas] = useState(SCHEMAS);
 
+  useEffect(() => {
+    if (!dynamicContext.isAuthenticated) {
+      router.push("/");
+    }
+  }, [dynamicContext.isAuthenticated]);
+
   // Returns an array of options for a given field name.
   const getFieldOptions = (fieldName) => {
     // Field names for which options are available
@@ -78,11 +84,9 @@ const Register = () => {
       } else if (role === ROLES.BRAND) {
         return (
           values.brandName &&
-          values.phone &&
           values.brandDescription &&
           values.industries.length &&
-          values.size.length &&
-          values.location.length
+          values.size.length
         );
       }
     }
@@ -124,7 +128,7 @@ const Register = () => {
               username: user.username,
               name: values.name,
               email: values.email,
-              wallet: await dynamicContext.walletConnector.getAddress(),
+              wallet: await dynamicContext.primaryWallet.address,
               platform: values.platform[0].id,
               industries: values.industries[0].id,
               sex: values.gender,
@@ -135,22 +139,24 @@ const Register = () => {
       brandInfo:
         values.role === ROLES.BRAND
           ? {
-              name: user.username,
+              username: user.username,
+              name: values.name,
               email: values.email,
-              wallet: await dynamicContext.walletConnector.getAddress(),
-              industries: values.industries,
-              size: values.size,
+              wallet: await dynamicContext.primaryWallet.address,
+              industry: values.industries[0].id,
+              size: values.size[0].id,
               description: values.description,
-              image: values.image,
+              image: avatarURL,
             }
           : {},
     };
 
     try {
+      console.log('before update profile', profile)
       const res = await updateProfile(profile);
-      console.log(res, "resssss");
+      console.log("after update profile: ", res);
 
-      return { data, error };
+      return res;
     } catch (error) {
       const errorMessage = error?.message || "Server error occurred";
       toast.error(errorMessage);
@@ -166,12 +172,9 @@ const Register = () => {
       const avatarURL = formData.avatar_url
         ? await uploadImageToImgBB(formData)
         : "";
-      const { error } = await createInfluencerOrBrandHandler(
-        formData,
-        avatarURL
-      );
+      const res = await createInfluencerOrBrandHandler(formData, avatarURL);
 
-      if (error) {
+      if (!res.ok || res.status !== 200) {
         const errorMessage = error?.message || "Server error occurred";
         throw new Error(errorMessage);
       }

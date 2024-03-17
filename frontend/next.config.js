@@ -15,7 +15,8 @@ const nextConfig = {
       'assets.landing.jobs',
       'claggldspplsjasuzzze.supabase.co',
       'picsum.photos',
-      'pbs.twimg.com'
+      'pbs.twimg.com',
+        'i.ibb.co'
     ],
   },
   webpack(config) {

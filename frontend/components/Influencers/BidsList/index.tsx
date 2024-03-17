@@ -4,6 +4,8 @@ import InfluencerContent from "@/components/Influencers/JobsItem/InfluencerConte
 import InfluencerActions from "@/components/Influencers/JobsItem/InfluencerActions";
 import {BidInfo} from "@/hooks/useApi";
 import JobCardItem from "@/components/Influencers/JobsItem";
+import BidActions from "@/components/Influencers/BidsList/BidActions";
+import {formatEther, parseEther} from "viem";
 
 interface IProps {
     bids: BidInfo[]
@@ -28,6 +30,8 @@ const BidsItem: FC<{bid: BidInfo}> = ({bid}) => {
                 <div className="col-span-12 lg:col-span-9">
                     <h2 className="">{bid.title}</h2>
                     <p>{bid.description}</p>
+                    <p>Budget: {formatEther(bid.budget)} $ONLY</p>
+                    <p>Required likes: {bid.impressions}</p>
                     <BidActions bid={bid}/>
                     {/*<InfluencerActions influencer={influencer}/>*/}
                 </div>
@@ -39,7 +43,7 @@ const BidsItem: FC<{bid: BidInfo}> = ({bid}) => {
 const BidsList: FC<IProps> = ({bids}) => {
     return (
         <section
-            className="relative flex flex-col items-center justify-center col-span-12 mx-auto max-w-8xl sm:col-span-8">
+            className="relative flex flex-col items-center justify-center col-span-12 mx-auto max-w-8xl sm:col-span-8 mt-2">
             <ul className="grid w-full grid-cols-1 gap-5 h-fit">
                 {bids?.length > 0 &&
                     bids.map((bid) => {
@@ -49,6 +53,9 @@ const BidsList: FC<IProps> = ({bids}) => {
                             </li>
                         );
                     })}
+                {bids?.length === 0 && (
+                    <div>No bids for you at the moment.</div>
+                )}
             </ul>
         </section>
     )

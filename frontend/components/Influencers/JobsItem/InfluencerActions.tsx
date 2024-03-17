@@ -11,7 +11,7 @@ interface IProps {
     influencer: Influencer
 }
 const InfluencerActions: React.FC<IProps> = ({influencer}) => {
-    const {submitBid} = useApi();
+    const {submitBid, user, dynamicContext} = useApi();
 
     const [createBidStatus, setCreateBidStatus] = useState("idle");
 
@@ -21,7 +21,13 @@ const InfluencerActions: React.FC<IProps> = ({influencer}) => {
             await submitBid({
                 budget: parseEther("5"),
                 influencerWallet: influencer.wallet,
-                impressions: influencer.follower_count,
+                influencerUsername: influencer.username,
+                brandUsername: user.username,
+                brandWallet: await dynamicContext.primaryWallet.address,
+                impressions: influencer.followerCount || 50000,
+                status: "pending",
+                title: "Example demo",
+                description: "Please show abc in pic"
             })
         } catch (e) {
             console.error(e);

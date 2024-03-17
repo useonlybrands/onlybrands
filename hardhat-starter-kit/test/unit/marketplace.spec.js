@@ -59,11 +59,7 @@ const donID = "0x66756e2d617262697472756d2d7365706f6c69612d310000000000000000000
             const paymentAmount = amt;
 
             const tx = await marketplaceContract.connect(brand).createOffer(influencer.address, views, paymentAmount);
-            console.log(`tx`)
-            console.log(tx)
             const res = await tx.wait()
-            console.log(`res`)
-            console.log(res)
 
             const offer = await marketplaceContract.ads(adId);
             assert.equal(offer.id, adId);
@@ -184,5 +180,59 @@ const donID = "0x66756e2d617262697472756d2d7365706f6c69612d310000000000000000000
             assert.equal(removedOffer.paymentAmount, 0);// Offer should be destroyed
             assert.equal(removedOffer.views, 0);// Offer should be destroyed
         })
+
+        it("manual payout ", async () => {
+            let onlyContract;
+            const [deployer, brand, influencer] = await ethers.getSigners()
+            
+            const OnlyFactory = await ethers.getContractFactory("OnlyToken")
+            onlyContract = await OnlyFactory.connect(deployer).deploy()
+            
+            const MarketplaceFactory = await ethers.getContractFactory("Marketplace");
+            
+            const marketplaceContract = await MarketplaceFactory.connect(deployer).deploy(router, donID, subscriptionId, source, onlyContract.address);
+
+            const amt = "100000000000000000000";
+            // transfer to the brand 100 $ONLY  
+            await onlyContract.connect(deployer).transfer(brand.address, amt)
+            
+            // First give access to 100 tokens 
+            await onlyContract.connect(brand).approve(marketplaceContract.address, amt);
+
+            const adId = (await marketplaceContract.nextAdId()).toString();
+            const views = 1000;
+            const paymentAmount = amt;
+
+            await marketplaceContract.connect(brand).createOffer(influencer.address, views, paymentAmount);
+
+            await marketplaceContract.connect(influencer).acceptOffer(adId);
+
+            const settlementViews = 800;
+            const influencerInitialBalance = await onlyContract.balanceOf(influencer.address);
+            const brandInitialBalance = await onlyContract.balanceOf(brand.address);
+
+            // console.log("Influencer's initial balance:", influencerInitialBalance.toString());
+            // console.log("Brand's initial balance:", brandInitialBalance.toString());
+
+            await marketplaceContract.connect(deployer).manualSettlement(adId, settlementViews);
+
+            const influencerFinalBalance = await onlyContract.balanceOf(influencer.address);
+            const brandFinalBalance = await onlyContract.balanceOf(brand.address);
+
+
+            // console.log("Influencer's final balance:", influencerFinalBalance.toString());
+            // console.log("Brand's final balance:", brandFinalBalance.toString());
+
+            // Calculate expected influencer payment based on views achieved
+            const expectedPaymentToInfluencer = BigInt(amt) * BigInt(settlementViews) / BigInt(views);
+            const expectedRefundToBrand = BigInt(amt) - expectedPaymentToInfluencer;
+
+            assert.equal(influencerFinalBalance.toString(), (BigInt(influencerInitialBalance) + expectedPaymentToInfluencer).toString(), "Influencer's final balance is incorrect");
+            assert.equal(brandFinalBalance.toString(), (BigInt(brandInitialBalance) + expectedRefundToBrand).toString(), "Brand's final balance is incorrect");
+        })
+
+       
+
+        
     })
 })

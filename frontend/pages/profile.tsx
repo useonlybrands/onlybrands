@@ -74,22 +74,24 @@ const Profile = () => {
   // };
 
   const handleVerify = async (proof: ISuccessResult) => {
-      const res = await fetch("/world-verify", { // route to your backend will depend on implementation
+    const res = await fetch(`/api/worldcoin`, {
       method: "POST",
       headers: {
-      "Content-Type": "application/json",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(proof),
-  })
-  if (!res.ok) {
-      throw new Error("Verification failed."); // IDKit will display the error message to the user in the modal
-  }
+    })
+    if (!res.ok) {
+      // IDKit will display the error message to the user in the modal
+      throw new Error("Verification failed."); 
+    }
   };
 
   const onSuccess = () => {
-    // This is where you should perform any actions after the modal is closed
-    // Such as redirecting the user to a new page
     window.location.href = "/success";
+
+    // ADD COLUMN  WORLD_COIN ID TO PROFILE 
+    // HTI THE MUTATION TO SAVE IT 
   };
 
   return (
