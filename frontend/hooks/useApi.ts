@@ -63,10 +63,17 @@ export interface BidInfo {
   // onchainId: bigint;
 }
 
+export interface CheckUsername {
+  data: {
+    brand: Array<any>;
+    influencer: Array<any>;
+  };
+}
+
 export type BidStatus = "";
 
 export interface UseApi {
-  // TODO: check in database if user is registered (isRegistered endpoint)
+  isOnboarded: (username: string) => Promise<any>;
   user: UserProfile;
   dynamicContext: UseDynamicContext;
   signMessage: (message: string) => any;
@@ -248,6 +255,29 @@ export const useApi: () => UseApi = () => {
 
   const acceptOffer = (onchainId: bigint) => {};
 
+  const isOnboarded = async (username: string) => {
+    const response = await authFetch(
+      "/check-username",
+      dynamicContext.authToken,
+      {
+        headers: {
+          Authorization: `Bearer ${dynamicContext.authToken}`,
+        },
+        method: "GET",
+        body: JSON.stringify({
+          username: username,
+        }),
+      }
+    );
+
+    const { data } = await response.json();
+
+    const isBrandExist = data.brand.length > 0;
+    const isInfluencerExist = data.influencers.length > 0;
+
+    return isBrandExist || isInfluencerExist;
+  };
+
   return {
     user: dynamicContext.user,
     dynamicContext,
@@ -258,5 +288,6 @@ export const useApi: () => UseApi = () => {
     fetchBalance,
     balance,
     submitBid,
+    isOnboarded,
   };
 };

@@ -1,4 +1,7 @@
-import {DynamicContextProvider, DynamicUserProfile} from "@dynamic-labs/sdk-react-core";
+import {
+  DynamicContextProvider,
+  DynamicUserProfile,
+} from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import Layout from "@/components/partials/Layout";
 import { AppProps } from "@/types";
@@ -15,12 +18,11 @@ const App = (props: AppProps): JSX.Element => {
   return (
     <DynamicContextProvider
       settings={{
-        eventsCallbacks: {
-          onAuthSuccess: (args) => {
-            router.push("/register");
-            console.log("USER CONNECTED... REDIRECTING TO REGISTER", args);
-          },
-        },
+        // eventsCallbacks: {
+        //   onAuthSuccess: (args) => {
+        //     router.push("/register");
+        //   },
+        // },
         environmentId: process.env.NEXT_PUBLIC_DYNAMIC_ENV_ID || "",
         walletConnectors: [EthereumWalletConnectors],
         evmNetworks,
@@ -29,13 +31,13 @@ const App = (props: AppProps): JSX.Element => {
         displaySiweStatement: true,
         customPrivacyPolicy: (
           <div>
-          {/* DO THE CONNECT WITH WORLDCOIN */}
+            {/* DO THE CONNECT WITH WORLDCOIN */}
             <Button>Connect</Button>
           </div>
         ),
       }}
     >
-        <DynamicUserProfile/>
+      <DynamicUserProfile />
       <Layout>
         <Component {...pageProps} />
         <ToastContainer
