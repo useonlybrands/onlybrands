@@ -31,7 +31,10 @@ async function deployMarketplace() {
         _tokenContract = '0xD2A1a753C056aDd5165881DA7eA243D4eDf78A96';
     }
     if(network.name == 'arbitrumSepolia') {
-        _tokenContract = '0x5B557183636e4b72F05721036F3655af5885f282' // its hardcoded for now woops 
+        _tokenContract = '0x5B557183636e4b72F05721036F3655af5885f282' 
+    }
+    if(network.name == 'celoAlfajores') {
+        _tokenContract = '0xD6FEDeA87e569975Fd2B47f161537470856c872A'
     }
     console.log(`using $ONLY at ${_tokenContract}.`)
 
@@ -50,28 +53,20 @@ async function deployMarketplace() {
 
     console.log(`Marketplace deployed to ${Marketplace.address} on ${network.name}`)
 
-    if (network.name == 'arbitrumSepolia') {
-        console.log("Verifying contract on ARBISCAN...")
-        await run("verify:verify", {
-            address: Marketplace.address,
-            constructorArguments: [
-                _router, 
-                _donID, 
-                _subscriptionId,
-                _source,  
-                _tokenContract],
-            contract: "contracts/Marketplace.sol:Marketplace"
-        })
-        console.log("Contract verification completed.")
-    }
-    if(network.name == 'spicy') {
-        console.log("Verifying contract on SPICY...")
-        await run("verify:verify", {
-            address: OnlyToken.address,
-            constructorArguments: [],
-            contract: "contracts/OnlyToken.sol:OnlyToken"
-        })
-    }
+
+    console.log("Verifying contract on etherscan...")
+    await run("verify:verify", {
+        address: Marketplace.address,
+        constructorArguments: [
+            _router, 
+            _donID, 
+            _subscriptionId,
+            _source,  
+            _tokenContract],
+        contract: "contracts/Marketplace.sol:Marketplace"
+    })
+    console.log("Contract verification completed.")
+
 }
 
 module.exports = {

@@ -526,3 +526,7 @@ CHILIZ DOESNT SHUPPORT ACCOUNT ASBTRICTION DYNAMIC
 ```
 npx hardhat settle-up --ad-id 2 --views 23 --marketplace 0x22bF3c1bF4D4b5508Eb2AF99bBE565F7e2375DCb --network spicy
 ```
+
+- [Celo Only Token](https://alfajores.celoscan.io/address/0xd2a1a753c056add5165881da7ea243d4edf78a96)
+- [Celo Marketplace](https://alfajores.celoscan.io/token/0xD6FEDeA87e569975Fd2B47f161537470856c872A)
+

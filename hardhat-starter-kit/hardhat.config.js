@@ -32,6 +32,7 @@ const FORKING_BLOCK_NUMBER = parseInt(process.env.FORKING_BLOCK_NUMBER) || 0
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "Your etherscan API key"
 const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "Your polygonscan API key"
 const ARBISCAN_API_KEY = process.env.ARBISCAN_API_KEY || "Your ARBISCAN API key"
+const CELO_API_KEY = process.env.CELO_API_KEY || "Your CELO_API_KEY API key"
 
 const REPORT_GAS = process.env.REPORT_GAS || false
 
@@ -105,6 +106,13 @@ module.exports = {
             currencySymbol: 'CHZ',
             blockExplorer: 'https://testnet.chiliscan.com/',
         },
+        celoAlfajores: {
+            url: 'https://alfajores-forno.celo-testnet.org',
+            accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
+            chainId: 44787,
+            currencySymbol: 'CELO',
+            blockExplorer: 'https://alfajores.celoscan.io/',
+        },
     },
     defaultNetwork: "hardhat",
     etherscan: {
@@ -119,6 +127,7 @@ module.exports = {
             // arbitrumGoerli: ARBISCAN_API_KEY,
             arbitrumSepolia: ARBISCAN_API_KEY,
             spicy: ARBISCAN_API_KEY,
+            celoAlfajores: CELO_API_KEY,
             
         },
         customChains: [
@@ -137,7 +146,16 @@ module.exports = {
                   apiURL: "https://api.routescan.io/v2/network/mainnet/evm/88888/etherscan",
                   browserURL: "https://testnet.chiliscan.com"
                 }
-              }
+              },
+              {
+                network: 'celoAlfajores',
+                chainId: 44787,
+                urls: {
+                    browserURL: 'https://alfajores.celoscan.io',
+                    apiURL: "https://api-alfajores.celoscan.io/api",
+                },
+                
+            },
           ]
         
     },
