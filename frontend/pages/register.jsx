@@ -35,6 +35,12 @@ const Register = () => {
   const [initialValues, setInitialValues] = useState(INITIAL_VALUES);
   const [typesSchemas] = useState(SCHEMAS);
 
+  useEffect(() => {
+    if (!dynamicContext.isAuthenticated) {
+      router.push("/");
+    }
+  }, [dynamicContext.isAuthenticated]);
+
   // Returns an array of options for a given field name.
   const getFieldOptions = (fieldName) => {
     // Field names for which options are available
@@ -78,11 +84,9 @@ const Register = () => {
       } else if (role === ROLES.BRAND) {
         return (
           values.brandName &&
-          values.phone &&
           values.brandDescription &&
           values.industries.length &&
-          values.size.length &&
-          values.location.length
+          values.size.length
         );
       }
     }
@@ -148,7 +152,7 @@ const Register = () => {
 
     try {
       const res = await updateProfile(profile);
-      console.log('updateProfile: ', res);
+      console.log("updateProfile: ", res);
 
       return res;
     } catch (error) {
@@ -166,10 +170,7 @@ const Register = () => {
       const avatarURL = formData.avatar_url
         ? await uploadImageToImgBB(formData)
         : "";
-      const res = await createInfluencerOrBrandHandler(
-        formData,
-        avatarURL
-      );
+      const res = await createInfluencerOrBrandHandler(formData, avatarURL);
 
       if (!res.ok || res.status !== 200) {
         const errorMessage = error?.message || "Server error occurred";
