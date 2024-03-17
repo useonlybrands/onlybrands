@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Head from '@/components/partials/Head';
 import Hero from '@/components/UI/Hero';
-import JobsList from '@/components/Influencers/InfluencersList';
+import InfluencersList from '@/components/Influencers/InfluencersList';
 import JobsSortBy from '@/components/Influencers/JobsSortBy';
 import Pagination from '@/components/UI/Pagination';
 import Filters from '@/components/Influencers/Filters';
@@ -78,7 +78,7 @@ const Home = (): React.ReactElement => {
             </div>
           </header>
 
-          <JobsList error={null} influencers={influencers} loading={loading} />
+          <InfluencersList error={null} influencers={influencers} loading={loading} />
         </section>
 
         <Filters filters={memoizedFilters} onChange={handleFiltersChange} />
