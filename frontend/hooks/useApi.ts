@@ -331,13 +331,14 @@ export const useApi: () => UseApi = () => {
       hash: acceptOfferHash,
     });
 
-    await authFetch("/bid", dynamicContext.authToken, {
-      method: "POST",
-      body: JSONBig({ useNativeBigInt: true }).stringify({
-        ...bid,
-        status: "accepted",
-      }),
-    });
+    await authFetch(`/bid/${bid.id}`, dynamicContext.authToken, {
+        method: "POST",
+        body: JSONBig({ useNativeBigInt: true }).stringify({
+          ...Object.fromEntries(Object.entries(bid).filter(([k,v]) => v !== null)),
+          status: "accepted"
+        })
+      }
+    );
 
     fetchBids();
   };
@@ -368,13 +369,14 @@ export const useApi: () => UseApi = () => {
       hash: acceptOfferHash,
     });
 
-    await authFetch("/bid", dynamicContext.authToken, {
-      method: "POST",
-      body: JSONBig({ useNativeBigInt: true }).stringify({
-        ...bid,
-        status: "completed",
-      }),
-    });
+    await authFetch(`/bid/${bid.id}`, dynamicContext.authToken, {
+          method: "POST",
+          body: JSONBig({ useNativeBigInt: true }).stringify({
+            ...Object.fromEntries(Object.entries(bid).filter(([k,v]) => v !== null)),
+            status: "completed"
+          })
+        }
+    );
 
     fetchBids();
   };
